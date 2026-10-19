@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",   // ← 利用者が想定される解決方式に合わせる
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": false,           // ← ここは false にして自分のパッケージの型もちゃんとチェックさせる
+    "noEmit": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true
+  },
+  "include": ["**/*.ts"]
+}

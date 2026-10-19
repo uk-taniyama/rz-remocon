@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.gen.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "outDir": "./work/dts-gen",
+    "rootDir": "./src"
+  },
+  "include": ["src/gen/index.ts"]
+}

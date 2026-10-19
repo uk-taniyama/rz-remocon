@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>独自のリモコン画面</title>
+    <style>
+      body { font-family: sans-serif; max-width: 20rem; margin: 2rem auto; }
+      button { font-size: 1.2rem; padding: 0.8rem 1rem; margin: 0.2rem; }
+      pre { background: #eee; padding: 0.5rem; min-height: 2rem; }
+    </style>
+  </head>
+  <body>
+    <h1>独自のリモコン画面</h1>
+    <!--
+      server の -d で配信すると、/api は同じサーバーで提供されるため、相対パスで送信できる。
+        npx rz-remocon server -p 8485 -d custom-ui
+      別のサーバーから配信する場合は、fetch の送信先を絶対 URL にして、
+      server に -c <このページのオリジン> を指定する。
+    -->
+    <button data-code="40BF1E">音量ー</button>
+    <button data-code="40BF10">消音</button>
+    <button data-code="40BF1A">音量＋</button>
+    <pre id="log"></pre>
+    <script>
+      const log = document.getElementById("log");
+      document.addEventListener("click", async (event) => {
+        const code = event.target.closest("[data-code]")?.dataset.code;
+        if (!code) return;
+        const res = await fetch("/api/sendCode", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code }),
+        });
+        log.textContent = `${code}: ${res.status} ${await res.text()}`;
+      });
+    </script>
+  </body>
+</html>

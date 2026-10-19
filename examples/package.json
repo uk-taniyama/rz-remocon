@@ -1,0 +1,24 @@
+{
+  "name": "examples",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "rz-remocon": "file:.."
+  },
+  "scripts": {
+    "server": "rz-remocon server -p 8485 -d output",
+    "builder": "tsx builder.ts",
+    "builder:tabs": "tsx builder-tabs.ts",
+    "builder:icons": "tsx builder-icons.ts",
+    "builder:icon-urls": "tsx builder-icon-urls.ts",
+    "builder:editor": "tsx builder-editor.ts",
+    "direct": "tsx direct.ts",
+    "api-client": "tsx api-client.ts",
+    "custom-ui": "rz-remocon server -p 8485 -d custom-ui"
+  },
+  "devDependencies": {
+    "tsx": "^4.23.15",
+    "react": "^19.3.0",
+    "@types/react": "^19.2.18"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "skipLibCheck": true,
+    "outDir": "./work/dts",
+    "rootDir": "./src"
+  },
+  "include": [
+    "src/lib/*",
+    "src/api/*",
+    "src/cli/*",
+  ]
+}

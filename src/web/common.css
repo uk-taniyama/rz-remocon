@@ -1,0 +1,159 @@
+/* 共通: デザイントークンと、素の要素の既定値。ビューア（main.css）とエディタ（editor.css）の両方が読む。 */
+
+/* 0. リセット（@layer。レイヤーの外の指定（Pico など）が、常にこの既定値に勝つ） */
+@layer reset {
+  /* 1. 幅と高さに padding と border を含める */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  /* 2. スマホを横向きにしたときの文字サイズ自動拡大を止める / タブ幅を4に */
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    tab-size: 4;
+  }
+
+  /* 3. height: auto へのアニメーションを許可（不要なので無効）
+  @media (prefers-reduced-motion: no-preference) {
+    html { interpolate-size: allow-keywords; }
+  }
+  */
+
+  /* 4. body の余白を消し、画面の高さいっぱいに。行間を読みやすく */
+  body {
+    margin: 0;
+    min-height: 100svh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* 5. 見出し・段落などの上下余白を消す（大きさと太さは残す） */
+  :where(h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd) {
+    margin: 0;
+  }
+
+  /* 6. 見出しの各行の長さを揃える（不要なので無効）
+  :where(h1, h2, h3, h4, h5, h6) { text-wrap: balance; }
+  */
+
+  /* 7. 長い英単語やURLが箱からはみ出さないよう折り返す */
+  :where(p, li, dd, h1, h2, h3, h4, h5, h6) {
+    overflow-wrap: break-word;
+  }
+
+  /* 8. 段落の最後の行に1語だけ残る折り返しを減らす（不要なので無効）
+  :where(p) { text-wrap: pretty; }
+  */
+
+  /* 9. role="list" を付けたリストだけ記号と余白を消す（使っていないので無効）
+  :where(ul[role="list"], ol[role="list"]) { margin: 0; padding: 0; list-style: none; }
+  */
+
+  /* 10. 画像・動画を親の幅に収め、下の隙間をなくす（svg は行内のアイコンがずれるので外す） */
+  :where(img, picture, video, canvas) {
+    display: block;
+    max-width: 100%;
+  }
+  /* :where(svg) を含めない */
+
+  /* 11. width/height 属性があっても縦横比を保つ */
+  :where(img, video) {
+    height: auto;
+  }
+
+  /* 12. フォーム部品の文字を周りと同じフォント・色にする */
+  :where(input, button, textarea, select) {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* 13. textarea のサイズ変更を縦方向だけにする */
+  :where(textarea) {
+    resize: vertical;
+  }
+
+  /* 14. 表のセルの境界線を1本にまとめる（表を使っていないので無効）
+  :where(table) { border-collapse: collapse; }
+  */
+
+  /* 15. 動きを減らす設定の人にはアニメーションをほぼ止める */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      /* biome-ignore lint/complexity/noImportantStyles: アニメーションを確実に止める！ */
+      animation-duration: 0.01ms !important;
+      /* biome-ignore lint/complexity/noImportantStyles: アニメーションを確実に止める！ */
+      animation-iteration-count: 1 !important;
+      /* biome-ignore lint/complexity/noImportantStyles: アニメーションを確実に止める！ */
+      transition-duration: 0.01ms !important;
+      /* biome-ignore lint/complexity/noImportantStyles: アニメーションを確実に止める！ */
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* デザイントークン ------------------------------------------------------ */
+
+:root {
+  --pico-font-family:
+    "BIZ UDPGothic", "BIZ UDGothic", "Hiragino Sans", "Yu Gothic UI", "Meiryo",
+    sans-serif;
+  --pico-spacing: 0.5rem;
+
+  /* surfaces, text, borders and feedback */
+  --color-white: #fff;
+  --color-ink: #0f172a;
+  --color-text-muted: #64748b;
+  --color-text-secondary: #475569;
+  --color-surface: #fff;
+  --color-canvas: #f8fafc;
+  --color-border: #e2e8f0;
+  --color-border-strong: #cbd5e1;
+  --color-focus: #0094ff;
+  --color-primary: #2563eb; /* ボタンなどの主要な色。タブの既定色（未指定時） */
+  --color-danger: #b91c1c;
+  --color-danger-border: #fecaca;
+  --color-grid: #cbd5e1;
+  --color-placeholder: #94a3b8;
+  --color-resize-handle: #ccc;
+  --color-hover: rgb(0 0 0 / 6%);
+}
+
+/* ベース ---------------------------------------------------------------- */
+
+html,
+body,
+#root {
+  height: 100%;
+  min-height: 100dvh;
+}
+
+body {
+  margin: 0;
+  min-height: 100dvh;
+  font-family: var(--pico-font-family);
+}
+
+@supports not (height: 100dvh) {
+  .container,
+  html,
+  body,
+  #root {
+    height: 100vh;
+    min-height: 100vh;
+  }
+}
+
+form {
+  margin-bottom: 0.25rem;
+}
+
+textarea {
+  min-height: 4.5rem;
+  padding: 0.25rem;
+  font-family: "BIZ UDGothic", "BIZ UDPGothic", monospace;
+}

@@ -1,0 +1,186 @@
+/* リモコン画面の部品（キーの枠、タブ付き表示）。ビューア（main.css）とエディタのプレビュー（editor.css）の両方が読み込む。 */
+
+/* リモコン画面: タブ付きキーボタン ------------------------------------------ */
+/*
+ * キーを収める枠。この要素をコンテナにして、中のキーの大きさ（--cell）を、この枠の幅（100cqw）から決める。
+ * ビューアでは画面いっぱい、プレビューでは小さな枠になる。どちらも、同じクラスの div で包めばよい。
+ */
+.remote-key-container {
+  height: 100%;
+  container-type: inline-size;
+}
+
+/*
+ * キーの配置全体を囲む要素。
+ * 次の変数は、RemoteKeyLayout がインラインで定義する。
+ * --cell: 1セルの長さ。
+ * --scaled-rem: 文字や余白の基準となる長さ（キーと同じ比率で縮小する）。
+ */
+.remote-key-layout {
+  max-width: 100%;
+  height: 100%;
+  margin: 0 auto;
+}
+
+/* 表示用・編集用のキー領域で、基準の文字サイズを中の要素に継承させる。 */
+.key-scale-root {
+  font-size: var(--scaled-rem);
+}
+
+/* キーの箱 ------------------------------------------------------------ */
+
+/*
+  キー（KeyFace）。
+  - ビューア、エディタ、タブで共有する。
+  - 文字サイズは親から継承し、要素間の隙間は --scaled-rem から算出する。
+*/
+.key-face {
+  --key-border: rgb(0 0 0 / 15%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--scaled-rem) * 0.1);
+  background-color: var(--key-bg);
+  color: var(--key-fg, var(--color-white));
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  /* border を含めてサイズを計算する */
+  box-sizing: border-box;
+  border: 0.1rem solid var(--key-border);
+  padding: 0.2rem;
+}
+
+/*
+  通常キー用のスタイル。
+  - key-face と同じ要素に付与する。エディタでは、後から読み込まれる editor.css で調整する。
+ */
+.key-face.key-button {
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.key-face.tab {
+  background-color: var(--key-fg, var(--color-white));
+  color: var(--key-bg);
+}
+
+/*
+  キーの中身。アイコンのみ、ラベルのみ、両方の3通りの表示を、ビューアとエディタで共有する。
+  両方を表示する場合は、アイコンもラベルも小さく表示する。
+  アイコン本体は、この枠いっぱい（100%）に描画し、大きさは枠で決める。
+  枠の大きさ（.key-face の内側に対する割合）は、アイコンのみの場合は 100%、ラベルと一緒の場合は 70%。
+*/
+.key-face__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.key-face__icon--with-label {
+  width: 70%;
+  height: 70%;
+}
+
+.key-face__icon > * {
+  width: 100%;
+  height: 100%;
+}
+
+.key-face__label {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  pointer-events: none;
+}
+
+.key-face__label--small {
+  font-size: 0.75em;
+}
+
+/*
+ * タブ付き表示（JS なし）。構造は RemoteKeyLayout.tsx のコメントを参照。
+ * 1行目に選択中の内容、2行目にタブの label を並べる。label は sticky で画面下に固定する。
+ */
+.remote-key-tabs {
+  display: grid;
+  /*
+   * 列の数は、タブの数（--remote-key-tabs-count、JS が入れる）。
+   * ラベルは1タブ1列に等幅で並ぶ。個数を使うのは、内容（panel）が grid-column: 1 / -1 で
+   * 全列にまたがるため。-1 は明示的な列の終端を指すので、列を暗黙にすると効かなくなる。
+   * 個数をなくすなら、panel の幅を別の方法で決める必要があり、下部バーの配置も組み直しになる。
+   */
+  grid-template-columns: repeat(var(--remote-key-tabs-count), minmax(0, 1fr));
+
+  /* 1行目を残りの高さ、2行目をタブバーにする */
+  grid-template-rows: minmax(0, 1fr) auto;
+
+  /* .content（flex で画面の残りを埋める）いっぱいに広げる。高さの補正は持たない */
+  height: 100%;
+  width: 100%;
+  max-width: 100%;
+}
+
+.remote-key-tabs__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.remote-key-tabs__panel {
+  display: none;
+  grid-row: 1;
+  grid-column: 1 / -1;
+
+  /* panel の中だけスクロール */
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  /* パネルをコンテナにして、cqw をスクロールバーを除いた幅にする。両端に取るので、タブバーと中心がそろう */
+  container-type: inline-size;
+  scrollbar-gutter: stable both-edges;
+}
+
+.remote-key-tabs__input:checked + .remote-key-tabs__panel {
+  display: block;
+}
+
+.remote-key-tabs__label {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
+  grid-row: 2;
+  display: block;
+  min-width: 0;
+  height: calc(var(--scaled-rem) * 2.75);
+  border: solid var(--remote-key-tabs-color, var(--color-primary));
+  border-width: 2px 1px 0;
+  background-color: var(--color-white);
+  color: var(--remote-key-tabs-color, var(--color-primary));
+  font-weight: 700;
+  line-height: calc(var(--scaled-rem) * 2.75);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  /* iPhoneのホームバーの安全領域 */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* 選択中：背景色と文字色だけ変更 */
+.remote-key-tabs__input:checked
+  + .remote-key-tabs__panel
+  + .remote-key-tabs__label {
+  background-color: var(--remote-key-tabs-color, var(--color-primary));
+  color: var(--color-white);
+}

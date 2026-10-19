@@ -1,0 +1,40 @@
+/* ビューア（index.html）用。common.css と remote-keys.css を含む。 */
+/* Pico を外したので、ここは読まない（外したあとの見た目を確認する） */
+@import "./common.css";
+@import "./remote-keys.css";
+
+/* アプリ枠 -------------------------------------------------------------- */
+
+.container {
+  width: 100vw;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  height: 100dvh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* デスクトップのアプリ画面だけに編集への控えめな導線を置く。 */
+.viewer-editor-link {
+  display: none;
+}
+
+@media (min-width: 900px) and (pointer: fine) {
+  .viewer-editor-link {
+    position: fixed;
+    display: inline-flex;
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    align-items: center;
+    line-height: 1.25;
+    padding: 0.45rem 0.7rem;
+    text-decoration: none;
+  }
+}

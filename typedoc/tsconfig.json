@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "noEmit": true,
+    "declaration": false,
+    "declarationMap": false,
+    "sourceMap": false,
+    "rootDir": null
+  },
+  "include": ["../dist/**/*.d.ts", "../src/**/*.ts"]
+}
+

@@ -1,0 +1,16 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/api-extractor/v7/api-extractor.schema.json",
+  "extends": "./api-extractor.shared.json",
+  "mainEntryPointFilePath": "./work/dts-gen/gen/index.d.ts",
+  "compiler": {
+    "tsconfigFilePath": "<projectFolder>/tsconfig.dts.gen.json"
+  },
+  "docModel": {
+    "enabled": true,
+    "apiJsonFilePath": "<projectFolder>/work/doc/gen.api.json"
+  },
+  "dtsRollup": {
+    "enabled": true,
+    "untrimmedFilePath": "./dist/gen.d.ts"
+  }
+}

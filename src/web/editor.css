@@ -1,0 +1,890 @@
+/* エディタ（editor.html）用。common.css を含む。 */
+@import "./common.css";
+@import "./remote-keys.css";
+
+/* エディタの素の要素（Pico を外した分の土台）。:where() で詳細度ゼロ -------- */
+
+:where(h2, h3) {
+  margin: 0;
+  font-weight: 600;
+}
+
+:where(button) {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0.25rem;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+:where(button:hover:not(:disabled)) {
+  background: var(--color-hover);
+}
+
+:where(button:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+:where(input, textarea) {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0.25rem;
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+:where(button, input, textarea, summary):focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 1px;
+}
+
+:where(summary) {
+  cursor: pointer;
+}
+
+/* エディタの素の要素（Pico を外した分の土台）。:where() で詳細度ゼロ -------- */
+
+:where(h2, h3) {
+  margin: 0;
+  font-weight: 600;
+}
+
+:where(button) {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0.25rem;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  cursor: pointer;
+}
+
+:where(button:hover:not(:disabled)) {
+  background: var(--color-hover);
+}
+
+:where(button:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+:where(input, textarea) {
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0.25rem;
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+:where(button, input, textarea, summary):focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 1px;
+}
+
+:where(summary) {
+  cursor: pointer;
+}
+
+body:has(.editor-layout) {
+  background: var(--color-border);
+}
+
+/*
+  エディタの文字サイズ（1rem）。幅 800px で 16px、1280px 以上で 20px へ、なめらかに広がる。
+  Pico の :root の値（画面幅で変わる）を上書きする。キーのセル（useRem）も、この値に追従する。
+  :root にして、Pico の :root と同じ詳細度で後から書く（editor.css は Pico の後に読まれる）。
+*/
+:root {
+  font-size: clamp(16px, calc(9.33px + 0.83vw), 20px);
+}
+
+/* エディタ: レイアウト ---------------------------------------------------- */
+
+/*
+  2段: 上段 [ツールバー](全幅・スクロールしない)
+       下段 [キー一覧] [中央(スクロールするのはここだけ)] [プロパティ]
+  両側のパネルは React のポータルで .editor-slot に描画される。
+
+  幅の配分: 中央は 24rem を下限にして残りを受け取り、
+  ウィンドウが狭くなると、左右が同じだけ 14rem まで縮む。
+*/
+.editor-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(14rem, 20rem) /* キー一覧 */
+    minmax(24rem, 1fr) /* 中央: 方眼 20rem + padding 2rem + スクロールバー分 */
+    minmax(14rem, 20rem); /* プロパティ */
+  /* 上段はツールバーの高さだけ。下段は残りを使い、中身の高さで伸ばさない */
+  grid-template-rows: auto minmax(0, 1fr);
+  width: 100%;
+  min-width: 52rem; /* 14 + 24 + 14。これ以下ではページ側が横スクロールになる */
+  max-width: 64rem; /* 20 + 24 + 20。これ以上は広がらない(中央寄せ) */
+  margin-inline: auto;
+  height: 100dvh;
+  background: var(--color-canvas);
+  color: var(--color-ink);
+}
+
+/* 上段: ツールバー。3列すべてにまたがる */
+.editor-toolbar {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  min-width: 0;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* ツールバーのボタンは大きさをそろえる（pico の既定の余白は大きすぎるため） */
+.editor-toolbar button {
+  margin: 0;
+  width: auto;
+  padding: 0.3rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+/* 保存ボタンの隣に出る状態メッセージ */
+.editor-toolbar__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem 0.75rem;
+  min-width: 0;
+}
+
+.editor-toolbar__status small {
+  margin: 0;
+}
+
+/* 背景色の設定（ラベルとカラーボタン） */
+.editor-toolbar__background {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.editor-toolbar__label {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+}
+
+/* 右端: レイアウト操作（空行を詰める / Reset）。破壊的な Reset は控えめな見た目のまま */
+.editor-toolbar__layout {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.editor-toolbar__layout button {
+  border-color: var(--color-border-strong);
+  background: transparent;
+  color: var(--color-text-secondary);
+}
+
+.editor-slot {
+  grid-row: 2;
+}
+
+.editor-slot--catalog {
+  grid-column: 1;
+}
+
+.editor-slot--props {
+  grid-column: 3;
+}
+
+/*
+  Preview（4列目）。ビューアと同じ見た目で、編集中のキーを描く。操作はできない。
+  広い画面（1400px 以上）だけ表示する。狭いときは非表示にして、3列のまま。
+  幅の配分は、右端に 14〜18rem を足す。レイアウト全体の上限も、その分だけ広げる。
+*/
+.editor-preview {
+  display: none;
+}
+
+@media (min-width: 1400px) {
+  .editor-layout {
+    grid-template-columns:
+      minmax(14rem, 20rem) /* キー一覧 */
+      minmax(24rem, 1fr) /* 中央 */
+      minmax(14rem, 20rem) /* プロパティ */
+      minmax(12rem, 14rem); /* Preview */
+    min-width: 64rem; /* 14 + 24 + 14 + 12 */
+    max-width: 78rem; /* 20 + 24 + 20 + 14 */
+  }
+
+  .editor-preview {
+    grid-row: 2;
+    grid-column: 4;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+    border-left: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .editor-preview__title {
+    margin: 0;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: var(--color-text-secondary);
+  }
+
+  /* 画面の枠。ここだけスクロールする。背景色は inline style（remocon.background）で渡る */
+  .editor-preview__screen {
+    flex: none;
+    height: min(24rem, 60dvh);
+    margin: 0 1rem 1rem;
+    overflow-y: auto;
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+  }
+
+  /* Preview は狭いため、タブ内の左右にスクロールバー用ガターを確保しない。 */
+  .editor-preview__screen .remote-key-tabs__panel {
+    scrollbar-gutter: auto;
+  }
+}
+
+/* スクロールするのは中央だけ。余白は padding で取る */
+.editor-main {
+  grid-row: 2;
+  grid-column: 2;
+  min-width: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable; /* スクロールの有無で幅が変わらないようにする */
+  padding: 1rem;
+}
+
+/* エディタ: キー一覧パネル ------------------------------------------------- */
+
+.key-catalog {
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 0.5rem 0.5rem;
+  border-right: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-ink);
+}
+
+.key-catalog__title {
+  margin: 0 0 0.5rem 0.5rem;
+  font-size: 1rem;
+  color: var(--color-ink);
+}
+
+.key-catalog__list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+/*
+ * カテゴリ見出し（details / summary）。
+ * details は .key-catalog__group だけ
+ */
+
+.key-catalog__group > summary {
+  padding: 0.35rem 0.5rem;
+  font-weight: bold;
+  color: var(--color-text-muted);
+}
+
+.key-catalog__group > summary::before {
+  content: "";
+  display: inline-block;
+  width: 0.75em;
+  height: 0.75em;
+  margin-inline: 0.35em 0.5em;
+  border-radius: 0.2em;
+  position: relative;
+  top: 1px; /* 三角（開閉マーク）の中心に合わせて、文字と一緒に 1px 下げる */
+  background: var(--kind-color);
+}
+
+/* 見出しの文字。四角と同じだけ下げて、三角（開閉マーク）との位置を合わせる */
+.key-catalog__label {
+  position: relative;
+  top: 1px;
+}
+
+/*
+  小さい操作ボタン（キー一覧の送信、カスタム欄の送信・追加、プロパティの送信）の共通指定。
+  他の部品と並ぶように、余白と文字を小さくそろえる。
+  セレクタを並べているのは、各ボタンの詳細度を変えないため（pico の指定に負けない値を保つ）。
+  個別の違いは、このあとの各ルールに書く。
+*/
+.key-catalog .key-catalog__send,
+.key-props .custom-key__button,
+.key-props__send {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0 0.4rem;
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+
+/* キー一覧の1行: 追加ボタン（左）と送信ボタン（右） */
+.key-catalog__row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.25rem;
+}
+
+.key-catalog__row .key-catalog__item {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 送信ボタンは、項目ボタンの下の余白に合わせて行の高さをそろえる */
+.key-catalog .key-catalog__send {
+  margin-bottom: 0.25rem;
+}
+
+/* キー名 (薄い枠のみ、ホバーで薄く強調) */
+.key-catalog .key-catalog__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 1.9rem;
+  margin: 0 0 0.25rem;
+  padding: 0.2rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  background: transparent;
+  box-shadow: none;
+  color: var(--color-ink);
+  font-size: 0.9rem;
+  font-weight: 400;
+  text-align: left;
+  cursor: pointer;
+  gap: 0.5rem;
+}
+
+/* 右端の「+」はホバー/フォーカス時に強調 */
+.key-catalog .key-catalog__item::after {
+  content: "+";
+  color: var(--color-text-muted);
+  opacity: 0.3;
+}
+
+.key-catalog .key-catalog__item:hover,
+.key-catalog .key-catalog__item:focus-visible {
+  border-color: var(--color-border-strong);
+  background: var(--color-hover);
+  box-shadow: none;
+}
+
+.key-catalog .key-catalog__item:hover::after,
+.key-catalog .key-catalog__item:focus-visible::after {
+  opacity: 1;
+}
+
+.key-catalog .key-catalog__item:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: -2px;
+}
+
+.key-catalog .key-catalog__label {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere; /* 長いラベルは折り返す */
+}
+
+.key-catalog .key-catalog__icon {
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 1.2rem;
+  height: 1.2rem;
+  padding: 0.1rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0.25rem;
+  background: var(--kind-color);
+  color: var(--color-white);
+}
+
+/* カスタムキー（コード入力・送信・追加）。プロパティパネルの下部に置く */
+.custom-key {
+  display: grid;
+  gap: 0.25rem;
+  /* pico の入力欄・ボタンの余白と角丸を、この欄だけ細くする */
+  --pico-form-element-spacing-vertical: 0.2rem;
+  --pico-form-element-spacing-horizontal: 0.4rem;
+  --pico-border-radius: 0.25rem;
+}
+
+.custom-key__row {
+  display: flex;
+  gap: 0.25rem;
+}
+
+/* pico の input の既定の高さ・余白を打ち消す（詳細度を上げて確実に当てる） */
+.key-props .custom-key__input {
+  flex: 1;
+  min-width: 0;
+  height: auto;
+  margin: 0;
+  padding: 0.2rem 0.4rem;
+  font-family: monospace;
+  font-size: 0.8rem;
+  line-height: 1.5;
+}
+
+/* プレースホルダー（入力例）は入力値より薄く見せる。Firefox は既定で半透明になるので opacity も戻す */
+.key-props .custom-key__input::placeholder {
+  color: var(--color-placeholder);
+  opacity: 1;
+}
+
+/* エディタ: キャンバス ---------------------------------------------------- */
+
+/*
+  gridstack が管理するルート要素。幅は TSX 側の inline style で指定する。
+  左右の padding は列幅が縮むので付けないこと。
+  高さは inline の height(= 最後のキーの段まで)だけ。下には padding で 1 段ぶん
+  (4rem)延ばし、次のキーを置く場所を見せる。
+  min-height を % や calc() で指定しないこと: gridstack は computed の min-height を
+  数値として読むため、パーセントが解決されないと "Invalid height val" で落ちる。
+  下の padding は高さに加算されるよう box-sizing を content-box にしている。
+*/
+.key-grid {
+  /* 編集画面のキーは 4rem 基準。文字・余白用の基準をキーと同率にする。 */
+  --scaled-rem: 0.8rem;
+  box-sizing: content-box;
+  padding-bottom: 4rem;
+}
+
+/*
+  方眼の背景を描くラッパー。gridstack の外側にあるので、min-height を % で指定してよい。
+  .editor-main の内側の高さまで方眼を延ばし、次のキーを置く場所を見せる。
+  幅は TSX 側の inline style で key-grid と同じ値にする。
+*/
+.key-grid-stage {
+  min-height: 100%;
+  background-image:
+    linear-gradient(to right, var(--color-grid) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-grid) 1px, transparent 1px);
+  background-size: 4rem 4rem;
+  background-repeat: repeat;
+  /* 右端の罫線。border だと列幅が縮むので、外側に影で描く */
+  box-shadow: 1px 0 0 var(--color-grid);
+}
+
+/* 削除ボタンなど、タイルの外にはみ出す要素を表示する(gridstack 既定は hidden/auto) */
+.key-grid > .grid-stack-item > .grid-stack-item-content {
+  overflow: visible;
+}
+
+/* 選択中(削除ボタンあり)のタイルを隣のタイルより手前に出す */
+.key-grid > .grid-stack-item:has(.key-tile-remove) {
+  z-index: 1;
+}
+
+/* リサイズハンドル(右下の角) */
+.key-grid > .grid-stack-item > .ui-resizable-se {
+  all: unset;
+  position: absolute;
+  right: 0.2rem;
+  bottom: 0.2rem;
+  display: block;
+  box-sizing: border-box;
+  width: 1rem;
+  height: 1rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  /* gridstack のデフォルトの矢印アイコンを消して、三角に置き換える */
+  background: var(--color-resize-handle);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  border: none;
+  border-radius: 0;
+  cursor: se-resize;
+  touch-action: none;
+  user-select: none;
+}
+
+/* ホバー中だけ見せる */
+.key-grid > .grid-stack-item > .ui-resizable-se {
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.key-grid > .grid-stack-item:hover > .ui-resizable-se {
+  opacity: 1;
+}
+
+/* エディタ: キータイル ---------------------------------------------------- */
+
+/* キー面を包み、グリッドセル内に余白を作る。 */
+.key-tile {
+  padding: 4px 3px 3px 4px;
+  height: 100%;
+}
+
+/* エディタ内のキー面。key-tile__button は操作上の識別に使う。 */
+.key-tile > .key-face {
+  overflow: hidden;
+  cursor: move;
+  user-select: none;
+}
+
+.ui-draggable-disabled .key-tile > .key-face {
+  cursor: pointer;
+}
+
+/* タブ: 背景を白、文字色をキー色にして反転させる */
+.key-tile > .key-face.tab {
+  border-radius: 0;
+  border-width: 0.5rem;
+  font-weight: bolder;
+}
+
+.key-tile > .key-face.selected {
+  --key-border: color-mix(in srgb, var(--key-bg) 85%, #000);
+  /* 中身がズレないように.key-faceのborder-width+paddingの幅0.3remとなるように調整 */
+  border-width: 0.2rem;
+  padding: 0.1rem;
+  box-shadow: 0 0 0.5rem var(--key-bg);
+}
+
+.key-tile > .key-face.selected.tab {
+  border-width: 0.5rem;
+}
+
+/* 削除ボタン: タイル(.grid-stack-item-content)全体に重ね、ボタンだけ操作を受ける */
+.key-tile-remove {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.key-tile-remove .key-tile-remove__button {
+  position: absolute;
+  top: -0.2rem;
+  right: -0.2rem;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--color-danger);
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-danger);
+  font-size: 0.8rem;
+  font-weight: bold;
+  line-height: 1;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.key-tile-remove .key-tile-remove__button:hover,
+.key-tile-remove .key-tile-remove__button:active,
+.key-tile-remove .key-tile-remove__button:focus {
+  border-color: var(--color-danger);
+  background: var(--color-surface);
+  color: var(--color-danger);
+}
+
+/* ホバー時だけ表示(フェードイン)。キーボード操作・タッチでも使えるようにしておく */
+.grid-stack-item .key-tile-remove__button {
+  opacity: 0;
+  transition: opacity 0.2s ease-in-out;
+}
+
+.grid-stack-item:hover .key-tile-remove__button,
+.key-tile-remove__button:focus-visible {
+  opacity: 1;
+}
+
+/* ホバーできない端末(タッチ)では常に表示する */
+@media (hover: none) {
+  .grid-stack-item .key-tile-remove__button {
+    opacity: 1;
+  }
+}
+
+/* エディタ: プロパティパネル ---------------------------------------------- */
+
+.key-props {
+  /* pico のフォーム部品の余白はこの変数で決まる(標準は 0.75rem / 1rem)。このパネル内だけ詰める */
+  --pico-form-element-spacing-vertical: 0.3rem;
+  --pico-form-element-spacing-horizontal: 0.5rem;
+  height: 100%;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 1rem 0.75rem;
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  color: var(--color-ink);
+}
+
+.key-props__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.key-props__title {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--color-ink);
+}
+
+.key-props .key-props__delete {
+  width: auto;
+  margin: 0;
+  padding: 0.15rem 0.6rem;
+  border-color: var(--color-danger-border);
+  background: transparent;
+  color: var(--color-danger);
+  font-size: 0.8rem;
+}
+
+/* 無効（削除できない）: 消さず、無効色にする */
+.key-props .key-props__delete:disabled {
+  border-color: var(--color-border-strong);
+  background: transparent;
+  color: var(--color-placeholder);
+  cursor: not-allowed;
+}
+
+.key-props__body {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.key-props__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.key-props__field {
+  display: grid;
+  gap: 0.15rem;
+  margin: 0;
+}
+
+.key-props__field-head {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.key-props__field-head input[type="checkbox"] {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+/* プロパティ: コードと送信ボタンを1行に並べる */
+.key-props__code-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.key-props__send {
+  padding: 0.2rem 0.5rem;
+  font-size: 0.75rem;
+}
+
+/* 送信コード（読み取り専用）。編集できないことが分かるよう、入力欄とは見た目を分ける */
+.key-props__code {
+  font-family: monospace;
+  color: var(--color-text-secondary);
+  word-break: break-all;
+}
+
+.key-props__field-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+/* pico の input セレクタ (0,2,1) に勝つため、詳細度を上げている */
+.key-props .key-props__field input.key-props__input {
+  width: 100%;
+  box-sizing: border-box;
+  height: auto;
+  margin: 0;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 0.25rem;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+
+/* 上級者向けの区画（カスタムキーと通信ログをまとめる） */
+/* 上級者向けの区画。パネルが縦のフレックスなので、上の余白 auto で下端に寄る */
+.key-props__dev {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: auto;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* 区画の見出し。下の小見出し（カスタムキーなど）と同じ大きさ・色にそろえる */
+.key-props__dev-title {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+/* プロパティパネルの下部: 区切り線つきのセクション（カスタムキー、通信ログ） */
+.key-props__section {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.key-props__section-title {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+/* 通信ログ（直近の送信結果を JSON で表示する読み取り専用の欄） */
+/* 高さは TSX の rows（情報量）で決める。CSS では height を指定しない */
+.send-log textarea {
+  width: 100%;
+  margin: 0;
+  resize: none;
+  font-family: monospace;
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+/* カラーピッカー --------------------------------------------------------- */
+
+/* ColorPicker */
+.color-picker {
+  display: flex;
+  flex-direction: column;
+  padding-left: 0.2rem;
+  padding-right: 0.2rem;
+  gap: 0.5rem;
+}
+
+.color-picker .react-colorful {
+  width: 100%;
+  height: 10rem;
+}
+
+.color-picker__hex-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.color-picker__hex-input {
+  margin: 0;
+  font-family: monospace;
+  text-transform: uppercase;
+}
+
+/* SwatchList */
+.swatch-list {
+  margin-bottom: 0;
+}
+
+.swatch-list__title {
+  margin: 0 0 0.25rem;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.swatch-list__items {
+  --swatch-size: 1.8rem;
+
+  display: grid;
+  grid-template-columns: repeat(8, var(--swatch-size));
+  gap: 0.4rem;
+}
+
+.swatch-list__swatch {
+  width: var(--swatch-size);
+  height: var(--swatch-size);
+  padding: 0;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 4px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.swatch-list__swatch--selected {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 1px;
+}
+
+/* ColorPickerDialog: Pico の dialog はオーバーレイ全面表示で、中身は article で囲む前提 */
+.color-picker-dialog__body {
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  gap: 0.6rem;
+  max-width: calc(100vw - 2rem);
+  margin: 0;
+}
+
+.color-picker-dialog__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.color-picker-dialog__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0;
+}
+
+.color-picker-dialog__action {
+  width: auto;
+  margin: 0;
+  padding: 0.25rem 0.75rem;
+}
+
+/* ColorPickerButton */
+.color-picker-button {
+  display: flex;
+  align-items: center;
+  background-color: var(--color-surface);
+  gap: 0.5rem;
+  width: 100%;
+  margin: 0;
+}
+
+.color-picker-button__swatch {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 4px;
+  flex: none;
+}
+
+.color-picker-button__hex {
+  font-family: monospace;
+}
