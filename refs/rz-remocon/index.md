@@ -22,7 +22,7 @@
 | [confirmConnection(pin)](../rz-remocon/index.md#confirmconnection-function) | PIN を使用して接続を確定する |
 | [createFileConfigStore(path, options)](../rz-remocon/index.md#createfileconfigstore-function) | ファイルに設定を保存する設定ストアを生成する |
 | [createReadonlyStore(data)](../rz-remocon/index.md#createreadonlystore-function) | 読み取り専用の設定ストアを生成する |
-| [digestRequest(host, { userId, password }, input, path, options)](../rz-remocon/index.md#digestrequest-function) | 指定した資格情報で、Digest 認証付きのリクエストを送信する |
+| [digestRequest(host, input, path, options)](../rz-remocon/index.md#digestrequest-function) | 指定した資格情報で、Digest 認証付きのリクエストを送信する |
 | [getPublicFeature()](../rz-remocon/index.md#getpublicfeature-function) | REGZA の公開情報を取得する |
 | [getPublicSupport()](../rz-remocon/index.md#getpublicsupport-function) | REGZA の公開サポート API を呼び出し、レスポンスを取得する |
 | [getSupport()](../rz-remocon/index.md#getsupport-function) | REGZA がサポートするリモートコマンドの一覧を取得する |
@@ -818,7 +818,6 @@ export declare function digestRequest<T>(host: string, input: DigestCredentials,
 | Parameter | Description |
 | - | - |
 | host | REGZA のホスト名または IP アドレス |
-| { userId, password } | |
 | input | |
 | path | API のパス |
 | options | Fetch のリクエストオプション |

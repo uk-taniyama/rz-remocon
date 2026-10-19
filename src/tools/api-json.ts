@@ -277,6 +277,8 @@ export function convertApiJson(
 
   // resolveExcerptTokens(gen, dict);
   resolveUnknownReference(gen, dict);
+  cleanupParameters(index);
+  cleanupParameters(api);
   cleanupParameters(gen);
 
   saveJson(join(outputDirectoryPath, "dict.json"), dict);
