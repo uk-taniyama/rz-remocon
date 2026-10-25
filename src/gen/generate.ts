@@ -16,17 +16,15 @@ import {
 import type { GenerateFromFileOpts } from "./types";
 
 /**
- * generate() のオプション。
+ * `generate()` のオプション。
  */
 export interface GenerateOpts {
-  /** Builder の build() が返したリモコン設定。 */
+  /** リモコン設定。 */
   remocon: RemoconConfig;
   /** 生成した静的リモコンの出力先ディレクトリ。 */
   outputDir: string;
   /**
-   * アイコンを描画する関数。
-   * key.icon には、アイコン名または画像 URL が渡される。
-   * 標準の描画関数として、defaultIconRender を使用できる。
+   * アイコンを描画する関数。標準の描画関数として、{@link defaultIconRender} を使用可能。
    */
   iconRender: RemoteKeyIconRender;
   /** @internal 開発用。 */
@@ -34,15 +32,14 @@ export interface GenerateOpts {
 }
 
 /**
- * Builder の build() が返したリモコン設定から、静的リモコンを生成する。
- * 出力先に、index.html、CSS、remote.js、favicon.svg を出力する。
+ * リモコン設定から、静的リモコン用 HTML を生成する。
+ *
+ * - {@link rz-remocon-api#remoconBuilder} で作成したリモコン設定を利用可能。
+ *
+ * @param opts - 生成オプション。
  */
-export async function generate({
-  remocon,
-  outputDir,
-  iconRender,
-  isDev,
-}: GenerateOpts): Promise<void> {
+export async function generate(opts: GenerateOpts): Promise<void> {
+  const { remocon, outputDir, iconRender, isDev } = opts;
   const publicDir = resolvePublicDir(isDev);
   const cssFile = findCssFile(publicDir);
   const cssPath = path.posix.join("assets", cssFile);
@@ -68,9 +65,11 @@ export async function generate({
 }
 
 /**
- * remocon.json から、静的リモコンを生成する。
+ * @internal
+ * `remocon.json` から、静的リモコン HTML を生成する。
  *
- * @internal CLI（generate コマンド）と開発用スクリプトから使用する。利用者向けの API ではない。
+ * - CLI（`generate` コマンド）と開発用スクリプトから使用する。
+ * - 利用者向けの API ではない。
  */
 export async function _generateFromFile({
   inputJson,

@@ -1,5 +1,5 @@
 import { mkdirSync, writeFileSync } from "node:fs";
-import { RemoteKeys, remoteKeysBuilder } from "rz-remocon/api";
+import { RemoteKeys, remoconBuilder } from "rz-remocon/api";
 import { builtinIcons, createGenerateTools, generate } from "rz-remocon/gen";
 
 // タブで切り替えるリモコンを、Builder で組み立てて生成する。
@@ -17,7 +17,7 @@ const outputDir = "output/tabs";
 
 const { decorator, iconRender } = createGenerateTools([builtinIcons]);
 
-const remocon = remoteKeysBuilder({
+const remocon = remoconBuilder({
   columns: 20, // 5キー分の幅
   background: "#0f172a",
   decorator,
@@ -38,7 +38,7 @@ const remocon = remoteKeysBuilder({
   .spacer(4)
   .add(RemoteKeys.chDown)
   .add(RemoteKeys.chUp)
-  // タブ2: 入力切替。2つ目以降のタブは、行の途中で追加しても、自動で改行してから配置される。
+  // タブ2: 入力切換。2つ目以降のタブは、行の途中で追加しても、自動で改行してから配置される。
   .tab("入力", "#7c3aed")
   .add(RemoteKeys.inputToggle)
   .add(RemoteKeys.inputHdmi1)

@@ -2,12 +2,18 @@
 
 # rz-remocon/api
 
+キー定義・色・スキーマ・API 契約を提供する。
+
+- キーの定義（[RemoteKeyDef](../rz-remocon-api/index.md#remotekeydef-interface)）、色マップ、アイコン URL 対応表の解析を提供する。
+- 設定の zod スキーマと、編集用 API の契約（[contract](../rz-remocon-api/index.md#contract-variable)）を提供する。
+- [remoconBuilder(options)](../rz-remocon-api/index.md#remoconbuilder-function) で、リモコン設定（[RemoconConfig](../rz-remocon-api/index.md#remoconconfig-typealias)）を組み立てる。
+
 ## Interfaces
 
 | Interface | Description |
 | - | - |
-| [RemoconBuilderOptions](../rz-remocon-api/index.md#remoconbuilderoptions-interface) | Builder の生成オプション |
-| [RemoteKey](../rz-remocon-api/index.md#remotekey-interface) | 定義済みの操作キー |
+| [RemoconBuilderOptions](../rz-remocon-api/index.md#remoconbuilderoptions-interface) | [RemoconBuilder](../rz-remocon-api/remoconbuilder-class.md) の生成オプション。 |
+| [RemoteKey](../rz-remocon-api/index.md#remotekey-interface) | キー名とキー定義を組み合わせた操作キー |
 | [RemoteKeyDef](../rz-remocon-api/index.md#remotekeydef-interface) | キーの定義 |
 | [RemoteKeyKindDef](../rz-remocon-api/index.md#remotekeykinddef-interface) | キーの種類（カテゴリ）の定義 |
 | [SpecialKeyDef](../rz-remocon-api/index.md#specialkeydef-interface) | 特殊キーの定義 |
@@ -22,65 +28,65 @@
 
 | TypeAlias | Description |
 | - | - |
-| [ApiFailure](../rz-remocon-api/index.md#apifailure-typealias) | |
+| [ApiFailure](../rz-remocon-api/index.md#apifailure-typealias) | API 呼び出しの失敗結果 |
 | [ApiResult](../rz-remocon-api/index.md#apiresult-typealias) | API 呼び出しの結果 |
-| [ApiSuccess](../rz-remocon-api/index.md#apisuccess-typealias) | |
-| [Client](../rz-remocon-api/index.md#client-typealias) | |
-| [ColorMap](../rz-remocon-api/index.md#colormap-typealias) | |
-| [ColorMapResult](../rz-remocon-api/index.md#colormapresult-typealias) | |
-| [ColorResolver](../rz-remocon-api/index.md#colorresolver-typealias) | |
-| [Contract](../rz-remocon-api/index.md#contract-typealias) | API の契約の型 |
-| [EditorRemoconConfig](../rz-remocon-api/index.md#editorremoconconfig-typealias) | |
-| [EditorRemoteKeyConfig](../rz-remocon-api/index.md#editorremotekeyconfig-typealias) | |
-| [IconUrls](../rz-remocon-api/index.md#iconurls-typealias) | アイコン名から画像 URL への対応表 |
-| [IconUrlsResult](../rz-remocon-api/index.md#iconurlsresult-typealias) | |
-| [RemoconConfig](../rz-remocon-api/index.md#remoconconfig-typealias) | |
-| [RemoteKeyConfig](../rz-remocon-api/index.md#remotekeyconfig-typealias) | |
-| [RemoteKeyDecorator](../rz-remocon-api/index.md#remotekeydecorator-typealias) | キーを更新する関数 |
-| [RemoteKeyDraft](../rz-remocon-api/index.md#remotekeydraft-typealias) | Builder 内部でキーを組み立てるための中間データ |
-| [RemoteKeyKind](../rz-remocon-api/index.md#remotekeykind-typealias) | |
-| [RemoteKeyName](../rz-remocon-api/index.md#remotekeyname-typealias) | |
-| [RemoteKeyOverrides](../rz-remocon-api/index.md#remotekeyoverrides-typealias) | キーに適用する上書き指定 |
+| [ApiSuccess](../rz-remocon-api/index.md#apisuccess-typealias) | API 呼び出しの成功結果 |
+| [Client](../rz-remocon-api/index.md#client-typealias) | API クライアントの型 |
+| [ColorMap](../rz-remocon-api/index.md#colormap-typealias) | 既定色 `DEFAULT` を含む色マップ。 |
+| [ColorMapInput](../rz-remocon-api/index.md#colormapinput-typealias) | キー名または種類名に色を割り当てるためのマップ |
+| [ColorMapResult](../rz-remocon-api/index.md#colormapresult-typealias) | 色マップの解析結果 |
+| [ColorResolver](../rz-remocon-api/index.md#colorresolver-typealias) | キー名から色を解決する関数の型 |
+| [Contract](../rz-remocon-api/index.md#contract-typealias) | API の契約 [contract](../rz-remocon-api/index.md#contract-variable) の型。 |
+| [EditorRemoconConfig](../rz-remocon-api/index.md#editorremoconconfig-typealias) | 編集用リモコン設定の型 |
+| [EditorRemoteKeyConfig](../rz-remocon-api/index.md#editorremotekeyconfig-typealias) | 編集用リモコン設定のキー型 |
+| [IconUrls](../rz-remocon-api/index.md#iconurls-typealias) | アイコン URL 対応表 |
+| [IconUrlsResult](../rz-remocon-api/index.md#iconurlsresult-typealias) | アイコン URL 対応表の解析結果 |
+| [RemoconConfig](../rz-remocon-api/index.md#remoconconfig-typealias) | 表示用リモコン設定の型 |
+| [RemoteKeyConfig](../rz-remocon-api/index.md#remotekeyconfig-typealias) | 表示用リモコン設定のキー型 |
+| [RemoteKeyDecorator](../rz-remocon-api/index.md#remotekeydecorator-typealias) | 操作キーの設定を更新する関数の型 |
+| [RemoteKeyDraft](../rz-remocon-api/index.md#remotekeydraft-typealias) | 操作キーの設定を組み立てる際に使用する中間データ |
+| [RemoteKeyKind](../rz-remocon-api/index.md#remotekeykind-typealias) | キーの種類名 |
+| [RemoteKeyName](../rz-remocon-api/index.md#remotekeyname-typealias) | 標準リモコンのキー定義に登録されているキー名 |
+| [RemoteKeyOverrides](../rz-remocon-api/index.md#remotekeyoverrides-typealias) | 操作キーの設定に適用する上書き指定 |
 
 ## Functions
 
 | Function | Description |
 | - | - |
-| [createColorResolver(colors)](../rz-remocon-api/index.md#createcolorresolver-function) | 色マップから、キー名に対応する色を解決する関数を生成する |
-| [createDefaultColorMap()](../rz-remocon-api/index.md#createdefaultcolormap-function) | |
-| [createRemoteKeyDraft(key, unit)](../rz-remocon-api/index.md#createremotekeydraft-function) | 操作キーの定義から、Builder 用の draft を生成する |
+| [createColorResolver(colors)](../rz-remocon-api/index.md#createcolorresolver-function) | 色マップから、[ColorResolver](../rz-remocon-api/index.md#colorresolver-typealias) を生成する |
+| [createDefaultColorMap()](../rz-remocon-api/index.md#createdefaultcolormap-function) | 標準リモコンのキー定義から既定の色マップを生成する |
 | [getClient(baseUrl)](../rz-remocon-api/index.md#getclient-function) | 指定したベース URL に接続する、型付きの API クライアントを生成する |
-| [isSpecialKey(name)](../rz-remocon-api/index.md#isspecialkey-function) | 名前が特殊キーかを判定する |
-| [mergeColorMap(overrides)](../rz-remocon-api/index.md#mergecolormap-function) | 標準の色（defaultColorMap）に、color-map.json の内容を重ねた色の対応表を返す |
-| [parseColorMap(value)](../rz-remocon-api/index.md#parsecolormap-function) | JSON として読み込んだ値を、色の対応表に変換する |
-| [parseIconUrls(value)](../rz-remocon-api/index.md#parseiconurls-function) | JSON として読み込んだ値を、アイコン名と画像 URL の対応表に変換する |
-| [remoteKeysBuilder(options)](../rz-remocon-api/index.md#remotekeysbuilder-function) | リモコン設定を組み立てる Builder を生成する |
-| [resolveRemoteKeyKindDef(name)](../rz-remocon-api/index.md#resolveremotekeykinddef-function) | キー名からキーの種類の定義を取得する |
-| [safeApiCall(apiResult)](../rz-remocon-api/index.md#safeapicall-function) | API 呼び出しを実行し、例外を <code>ApiResult</code> に変換して返す |
-| [toRemoconConfig(editor)](../rz-remocon-api/index.md#toremoconconfig-function) | 編集用データから、表示用データを導出する |
+| [isSpecialKey(name)](../rz-remocon-api/index.md#isspecialkey-function) | 指定された名前が特殊キーかを判定する |
+| [mergeColorMap(overrides)](../rz-remocon-api/index.md#mergecolormap-function) | 既定の色マップに、指定された色マップを上書きして返す |
+| [parseColorMap(value)](../rz-remocon-api/index.md#parsecolormap-function) | JSON として読み込んだ値を検証し、色マップに変換する |
+| [parseIconUrls(value)](../rz-remocon-api/index.md#parseiconurls-function) | JSON として読み込んだ値を検証し、アイコン URL 対応表に変換する |
+| [remoconBuilder(options)](../rz-remocon-api/index.md#remoconbuilder-function) | [RemoconBuilder](../rz-remocon-api/remoconbuilder-class.md) を生成する。 |
+| [resolveRemoteKeyKindDef(name)](../rz-remocon-api/index.md#resolveremotekeykinddef-function) | キー名に対応する種類の定義を取得する |
+| [safeApiCall(apiResult)](../rz-remocon-api/index.md#safeapicall-function) | API 呼び出しを安全に実行する |
+| [toRemoconConfig(editor)](../rz-remocon-api/index.md#toremoconconfig-function) | 編集用リモコン設定から表示用リモコン設定を生成する |
 
 ## Variables
 
 | Variable | Description |
 | - | - |
 | [apiPrefix](../rz-remocon-api/index.md#apiprefix-variable) | API のパスプレフィックス |
-| [contract](../rz-remocon-api/index.md#contract-variable) | API の契約（エンドポイント定義の集合） |
-| [DEFAULT_BACKGROUND](../rz-remocon-api/index.md#default_background-variable) | リモコン全体の背景色の既定値（白） |
-| [defaultColorMap](../rz-remocon-api/index.md#defaultcolormap-variable) | |
-| [defaultColorResolver](../rz-remocon-api/index.md#defaultcolorresolver-variable) | |
-| [editorRemoconConfigSchema](../rz-remocon-api/index.md#editorremoconconfigschema-variable) | 編集用のリモコン設定（remocon.editor.json）のスキーマ |
-| [editorRemoteKeyConfigSchema](../rz-remocon-api/index.md#editorremotekeyconfigschema-variable) | 編集用のキー1個分（remocon.editor.json）のスキーマ |
-| [FALLBACK_KIND](../rz-remocon-api/index.md#fallback_kind-variable) | どの接頭辞にも一致しないキー名に使う種類 |
-| [hexColorSchema](../rz-remocon-api/index.md#hexcolorschema-variable) | |
+| [contract](../rz-remocon-api/index.md#contract-variable) | API の契約 |
+| [DEFAULT_BACKGROUND](../rz-remocon-api/index.md#default_background-variable) | リモコン全体の既定の背景色 |
+| [defaultColorMap](../rz-remocon-api/index.md#defaultcolormap-variable) | 標準リモコンのキー定義から生成した既定の色マップ |
+| [defaultColorResolver](../rz-remocon-api/index.md#defaultcolorresolver-variable) | 既定の色マップを使って色を解決する関数 |
+| [editorRemoconConfigSchema](../rz-remocon-api/index.md#editorremoconconfigschema-variable) | 編集用リモコン設定のスキーマ |
+| [editorRemoteKeyConfigSchema](../rz-remocon-api/index.md#editorremotekeyconfigschema-variable) | 編集用リモコン設定に含まれるキーのスキーマ |
+| [FALLBACK_KIND](../rz-remocon-api/index.md#fallback_kind-variable) | キー名から種類を特定できない場合に使用する既定の種類 |
+| [hexColorSchema](../rz-remocon-api/index.md#hexcolorschema-variable) | #RRGGBB 形式の色のスキーマ |
 | [keyCodeSchema](../rz-remocon-api/index.md#keycodeschema-variable) | キーコードのスキーマ |
-| [LABEL_KEY_NAME](../rz-remocon-api/index.md#label_key_name-variable) | ラベル |
-| [remoconConfigSchema](../rz-remocon-api/index.md#remoconconfigschema-variable) | 表示用のリモコン設定（remocon.json）のスキーマ |
-| [REMOTE_KEY_DEFS](../rz-remocon-api/index.md#remote_key_defs-variable) | REGZA のリモコンキーの定義（キー名から code とラベルへの対応表） |
-| [REMOTE_KEY_KIND_DEFS](../rz-remocon-api/index.md#remote_key_kind_defs-variable) | |
-| [remoteKeyConfigSchema](../rz-remocon-api/index.md#remotekeyconfigschema-variable) | 表示用のキー1個分（remocon.json）のスキーマ |
-| [RemoteKeys](../rz-remocon-api/index.md#remotekeys-variable) | 操作キーの定義表を、name を含むキーオブジェクトの辞書に変換したもの |
-| [SPECIAL_KEY_DEFS](../rz-remocon-api/index.md#special_key_defs-variable) | 特殊キー名の定義 |
-| [TAB_KEY_NAME](../rz-remocon-api/index.md#tab_key_name-variable) | タブ |
+| [LABEL_KEY_NAME](../rz-remocon-api/index.md#label_key_name-variable) | ラベルを表す特殊キー名 |
+| [remoconConfigSchema](../rz-remocon-api/index.md#remoconconfigschema-variable) | 表示用リモコン設定のスキーマ |
+| [REMOTE_KEY_DEFS](../rz-remocon-api/index.md#remote_key_defs-variable) | REGZA の標準リモコンのキー定義 |
+| [REMOTE_KEY_KIND_DEFS](../rz-remocon-api/index.md#remote_key_kind_defs-variable) | キーの種類ごとの接頭辞、表示名、既定色の定義 |
+| [remoteKeyConfigSchema](../rz-remocon-api/index.md#remotekeyconfigschema-variable) | 表示用リモコン設定に含まれるキーのスキーマ |
+| [RemoteKeys](../rz-remocon-api/index.md#remotekeys-variable) | キー名と操作キー定義の対応表 |
+| [SPECIAL_KEY_DEFS](../rz-remocon-api/index.md#special_key_defs-variable) | 特殊キー名と定義の対応表 |
+| [TAB_KEY_NAME](../rz-remocon-api/index.md#tab_key_name-variable) | タブを表す特殊キー名 |
 
 ## Interface Details
 
@@ -88,9 +94,9 @@
 
 ### RemoconBuilderOptions
 
-Source: [src/api/builder.ts:104](../../src/api/builder.ts#L104)
+Source: [src/api/builder.ts:120](../../src/api/builder.ts#L120)
 
-Builder の生成オプション。
+[RemoconBuilder](../rz-remocon-api/remoconbuilder-class.md) の生成オプション。
 
 <a id="remoconbuilderoptions-signature"></a>
 
@@ -105,8 +111,8 @@ export interface RemoconBuilderOptions
 | Property | Description |
 | - | - |
 | [background](../rz-remocon-api/index.md#remoconbuilderoptions-background-propertysignature) | リモコン全体の背景色 |
-| [columns](../rz-remocon-api/index.md#remoconbuilderoptions-columns-propertysignature) | グリッドの列数 |
-| [decorator](../rz-remocon-api/index.md#remoconbuilderoptions-decorator-propertysignature) | キーを更新する関数 |
+| [columns](../rz-remocon-api/index.md#remoconbuilderoptions-columns-propertysignature) | グリッドの幅（セル数） |
+| [decorator](../rz-remocon-api/index.md#remoconbuilderoptions-decorator-propertysignature) | 各キーの設定を更新する関数 |
 | [unit](../rz-remocon-api/index.md#remoconbuilderoptions-unit-propertysignature) | 1 キー分のセル数 |
 
 #### Property Details
@@ -115,7 +121,7 @@ export interface RemoconBuilderOptions
 
 ##### background
 
-リモコン全体の背景色。省略時は DEFAULT_BACKGROUND を使用する。
+リモコン全体の背景色。省略時は [DEFAULT_BACKGROUND](../rz-remocon-api/index.md#default_background-variable) を使用する。
 
 <a id="background-signature"></a>
 
@@ -131,7 +137,7 @@ background?: string;
 
 ##### columns
 
-グリッドの列数。出力の grid.columns に反映する。
+グリッドの幅（セル数）。
 
 <a id="columns-signature"></a>
 
@@ -147,7 +153,7 @@ columns: number;
 
 ##### decorator
 
-キーを更新する関数。省略時は何もしない。
+各キーの設定を更新する関数。
 
 <a id="decorator-signature"></a>
 
@@ -163,7 +169,7 @@ decorator?: RemoteKeyDecorator;
 
 ##### unit
 
-1 キー分のセル数。出力の grid.unit に反映する。省略時は 4。
+1 キー分のセル数。省略時は 4。
 
 <a id="unit-signature"></a>
 
@@ -179,11 +185,9 @@ unit?: number;
 
 ### RemoteKey
 
-Source: [src/api/remote-keys.ts:79](../../src/api/remote-keys.ts#L79)
+Source: [src/api/remote-keys.ts:81](../../src/api/remote-keys.ts#L81)
 
-定義済みの操作キー。
-
-- 定義名をキー自身の name プロパティにも持つ。
+キー名とキー定義を組み合わせた操作キー。
 
 <a id="remotekey-signature"></a>
 
@@ -199,13 +203,15 @@ export interface RemoteKey extends RemoteKeyDef
 
 | Property | Description |
 | - | - |
-| [name](../rz-remocon-api/index.md#remotekey-name-propertysignature) | |
+| [name](../rz-remocon-api/index.md#remotekey-name-propertysignature) | キー名 |
 
 #### Property Details
 
 <a id="remotekey-name-propertysignature"></a>
 
 ##### name
+
+キー名。
 
 <a id="name-signature"></a>
 
@@ -223,7 +229,7 @@ name: string;
 
 Source: [src/api/key-types.ts:7](../../src/api/key-types.ts#L7)
 
-キーの定義。REMOTE_KEY_DEFS の値の型。
+キーの定義。`REMOTE_KEY_DEFS` の値の型。
 
 <a id="remotekeydef-signature"></a>
 
@@ -237,16 +243,18 @@ export interface RemoteKeyDef
 
 | Property | Description |
 | - | - |
-| [code](../rz-remocon-api/index.md#remotekeydef-code-propertysignature) | |
-| [color](../rz-remocon-api/index.md#remotekeydef-color-propertysignature) | |
-| [label](../rz-remocon-api/index.md#remotekeydef-label-propertysignature) | |
-| [showLabel](../rz-remocon-api/index.md#remotekeydef-showlabel-propertysignature) | |
+| [code](../rz-remocon-api/index.md#remotekeydef-code-propertysignature) | REGZA に送信するキーコード |
+| [color](../rz-remocon-api/index.md#remotekeydef-color-propertysignature) | キーの色 |
+| [label](../rz-remocon-api/index.md#remotekeydef-label-propertysignature) | キーに表示するラベル |
+| [showLabel](../rz-remocon-api/index.md#remotekeydef-showlabel-propertysignature) | ラベルを表示するかどうか |
 
 #### Property Details
 
 <a id="remotekeydef-code-propertysignature"></a>
 
 ##### code
+
+REGZA に送信するキーコード。
 
 <a id="code-signature"></a>
 
@@ -262,6 +270,8 @@ code: string;
 
 ##### color
 
+キーの色。
+
 <a id="color-signature"></a>
 
 ###### Signature
@@ -275,6 +285,8 @@ color?: string;
 <a id="remotekeydef-label-propertysignature"></a>
 
 ##### label
+
+キーに表示するラベル。
 
 <a id="label-signature"></a>
 
@@ -290,6 +302,8 @@ label: string;
 
 ##### showLabel
 
+ラベルを表示するかどうか。
+
 <a id="showlabel-signature"></a>
 
 ###### Signature
@@ -304,9 +318,9 @@ showLabel?: boolean;
 
 ### RemoteKeyKindDef
 
-Source: [src/api/key-types.ts:15](../../src/api/key-types.ts#L15)
+Source: [src/api/key-types.ts:19](../../src/api/key-types.ts#L19)
 
-キーの種類（カテゴリ）の定義。REMOTE_KEY_KIND_DEFS の要素の型。
+キーの種類（カテゴリ）の定義。`REMOTE_KEY_KIND_DEFS` の要素の型。
 
 <a id="remotekeykinddef-signature"></a>
 
@@ -320,16 +334,18 @@ export interface RemoteKeyKindDef
 
 | Property | Description |
 | - | - |
-| [color](../rz-remocon-api/index.md#remotekeykinddef-color-propertysignature) | |
-| [kind](../rz-remocon-api/index.md#remotekeykinddef-kind-propertysignature) | |
-| [label](../rz-remocon-api/index.md#remotekeykinddef-label-propertysignature) | |
-| [prefix](../rz-remocon-api/index.md#remotekeykinddef-prefix-propertysignature) | |
+| [color](../rz-remocon-api/index.md#remotekeykinddef-color-propertysignature) | 種類の既定色 |
+| [kind](../rz-remocon-api/index.md#remotekeykinddef-kind-propertysignature) | 種類を識別する名前 |
+| [label](../rz-remocon-api/index.md#remotekeykinddef-label-propertysignature) | 種類の表示名 |
+| [prefix](../rz-remocon-api/index.md#remotekeykinddef-prefix-propertysignature) | キー名から種類を判定するための接頭辞 |
 
 #### Property Details
 
 <a id="remotekeykinddef-color-propertysignature"></a>
 
 ##### color
+
+種類の既定色。
 
 <a id="color-signature"></a>
 
@@ -345,6 +361,8 @@ color: string;
 
 ##### kind
 
+種類を識別する名前。
+
 <a id="kind-signature"></a>
 
 ###### Signature
@@ -358,6 +376,8 @@ kind: string;
 <a id="remotekeykinddef-label-propertysignature"></a>
 
 ##### label
+
+種類の表示名。
 
 <a id="label-signature"></a>
 
@@ -373,6 +393,8 @@ label: string;
 
 ##### prefix
 
+キー名から種類を判定するための接頭辞。
+
 <a id="prefix-signature"></a>
 
 ###### Signature
@@ -387,11 +409,9 @@ prefix: string;
 
 ### SpecialKeyDef
 
-Source: [src/api/remote-keys.ts:30](../../src/api/remote-keys.ts#L30)
+Source: [src/api/remote-keys.ts:31](../../src/api/remote-keys.ts#L31)
 
 特殊キーの定義。
-
-- REGZA の操作キーとは分けて管理する。
 
 <a id="specialkeydef-signature"></a>
 
@@ -405,7 +425,7 @@ export interface SpecialKeyDef
 
 | Property | Description |
 | - | - |
-| [fullWidth](../rz-remocon-api/index.md#specialkeydef-fullwidth-propertysignature) | グリッドの行全体を使用するか |
+| [fullWidth](../rz-remocon-api/index.md#specialkeydef-fullwidth-propertysignature) | グリッドの行全体を使用するかどうか |
 | [label](../rz-remocon-api/index.md#specialkeydef-label-propertysignature) | 表示名 |
 
 #### Property Details
@@ -414,7 +434,7 @@ export interface SpecialKeyDef
 
 ##### fullWidth
 
-グリッドの行全体を使用するか。
+グリッドの行全体を使用するかどうか。
 
 <a id="fullwidth-signature"></a>
 
@@ -448,7 +468,9 @@ label: string;
 
 ### ApiFailure
 
-Source: [src/api/client.ts:27](../../src/api/client.ts#L27)
+Source: [src/api/client.ts:33](../../src/api/client.ts#L33)
+
+API 呼び出しの失敗結果。
 
 <a id="apifailure-signature"></a>
 
@@ -480,9 +502,13 @@ export type ApiFailure = {
 
 ### ApiResult
 
-Source: [src/api/client.ts:39](../../src/api/client.ts#L39)
+Source: [src/api/client.ts:48](../../src/api/client.ts#L48)
 
-API 呼び出しの結果。 成功時は ApiSuccess、失敗時は ApiFailure になる。
+API 呼び出しの結果。
+
+- `ok` プロパティで成否を判定する。
+- `true` の場合は [ApiSuccess](../rz-remocon-api/index.md#apisuccess-typealias)
+- `false` の場合は [ApiFailure](../rz-remocon-api/index.md#apifailure-typealias)
 
 <a id="apiresult-signature"></a>
 
@@ -502,7 +528,9 @@ export type ApiResult<T> = ApiSuccess<T> | ApiFailure;
 
 ### ApiSuccess
 
-Source: [src/api/client.ts:25](../../src/api/client.ts#L25)
+Source: [src/api/client.ts:30](../../src/api/client.ts#L30)
+
+API 呼び出しの成功結果。
 
 <a id="apisuccess-signature"></a>
 
@@ -519,7 +547,7 @@ export type ApiSuccess<T> = {
 
 | Parameter | Description |
 | - | - |
-| T | |
+| T | 成功時に返される値の型 |
 
 <a id="client-typealias"></a>
 
@@ -527,33 +555,57 @@ export type ApiSuccess<T> = {
 
 Source: [src/api/client.ts:23](../../src/api/client.ts#L23)
 
+API クライアントの型。
+
 <a id="client-signature"></a>
 
 #### Signature
 
 ```typescript
-export type Client = ReturnType<typeof getClient>;
+export type Client = ContractRouterClient<Contract>;
 ```
 
 <a id="colormap-typealias"></a>
 
 ### ColorMap
 
-Source: [src/api/colors.ts:11](../../src/api/colors.ts#L11)
+Source: [src/api/colors.ts:21](../../src/api/colors.ts#L21)
+
+既定色 `DEFAULT` を含む色マップ。
 
 <a id="colormap-signature"></a>
 
 #### Signature
 
 ```typescript
-export type ColorMap = Record<string, string> & Record<"DEFAULT", string>;
+export type ColorMap = ColorMapInput & Record<"DEFAULT", string>;
+```
+
+<a id="colormapinput-typealias"></a>
+
+### ColorMapInput
+
+Source: [src/api/colors.ts:16](../../src/api/colors.ts#L16)
+
+キー名または種類名に色を割り当てるためのマップ。
+
+- `DEFAULT` は必須としない。
+
+<a id="colormapinput-signature"></a>
+
+#### Signature
+
+```typescript
+export type ColorMapInput = Record<string, string>;
 ```
 
 <a id="colormapresult-typealias"></a>
 
 ### ColorMapResult
 
-Source: [src/api/colors.ts:46](../../src/api/colors.ts#L46)
+Source: [src/api/colors.ts:77](../../src/api/colors.ts#L77)
+
+色マップの解析結果。
 
 <a id="colormapresult-signature"></a>
 
@@ -561,7 +613,7 @@ Source: [src/api/colors.ts:46](../../src/api/colors.ts#L46)
 
 ```typescript
 export type ColorMapResult = {
-    colors: Record<string, string>;
+    colors: ColorMapInput;
     errors: string[];
 };
 ```
@@ -570,7 +622,9 @@ export type ColorMapResult = {
 
 ### ColorResolver
 
-Source: [src/api/colors.ts:13](../../src/api/colors.ts#L13)
+Source: [src/api/colors.ts:26](../../src/api/colors.ts#L26)
+
+キー名から色を解決する関数の型。
 
 <a id="colorresolver-signature"></a>
 
@@ -584,9 +638,9 @@ export type ColorResolver = (name: string) => string;
 
 ### Contract
 
-Source: [src/api/contract.ts:117](../../src/api/contract.ts#L117)
+Source: [src/api/contract.ts:118](../../src/api/contract.ts#L118)
 
-API の契約の型。
+API の契約 [contract](../rz-remocon-api/index.md#contract-variable) の型。
 
 <a id="contract-signature"></a>
 
@@ -600,7 +654,9 @@ export type Contract = typeof contract;
 
 ### EditorRemoconConfig
 
-Source: [src/api/schema.ts:161](../../src/api/schema.ts#L161)
+Source: [src/api/schema.ts:142](../../src/api/schema.ts#L142)
+
+編集用リモコン設定の型。
 
 <a id="editorremoconconfig-signature"></a>
 
@@ -614,7 +670,9 @@ export type EditorRemoconConfig = z.infer<typeof editorRemoconConfigSchema>;
 
 ### EditorRemoteKeyConfig
 
-Source: [src/api/schema.ts:160](../../src/api/schema.ts#L160)
+Source: [src/api/schema.ts:140](../../src/api/schema.ts#L140)
+
+編集用リモコン設定のキー型。
 
 <a id="editorremotekeyconfig-signature"></a>
 
@@ -628,9 +686,11 @@ export type EditorRemoteKeyConfig = z.infer<typeof editorRemoteKeyConfigSchema>;
 
 ### IconUrls
 
-Source: [src/api/icon-urls.ts:9](../../src/api/icon-urls.ts#L9)
+Source: [src/api/icon-urls.ts:13](../../src/api/icon-urls.ts#L13)
 
-アイコン名から画像 URL への対応表。
+アイコン URL 対応表。
+
+- アイコン名から画像 URL を引く。
 
 <a id="iconurls-signature"></a>
 
@@ -644,7 +704,9 @@ export type IconUrls = Record<string, string>;
 
 ### IconUrlsResult
 
-Source: [src/api/icon-urls.ts:38](../../src/api/icon-urls.ts#L38)
+Source: [src/api/icon-urls.ts:45](../../src/api/icon-urls.ts#L45)
+
+アイコン URL 対応表の解析結果。
 
 <a id="iconurlsresult-signature"></a>
 
@@ -661,7 +723,9 @@ export type IconUrlsResult = {
 
 ### RemoconConfig
 
-Source: [src/api/schema.ts:89](../../src/api/schema.ts#L89)
+Source: [src/api/schema.ts:74](../../src/api/schema.ts#L74)
+
+表示用リモコン設定の型。
 
 <a id="remoconconfig-signature"></a>
 
@@ -675,7 +739,9 @@ export type RemoconConfig = z.infer<typeof remoconConfigSchema>;
 
 ### RemoteKeyConfig
 
-Source: [src/api/schema.ts:88](../../src/api/schema.ts#L88)
+Source: [src/api/schema.ts:72](../../src/api/schema.ts#L72)
+
+表示用リモコン設定のキー型。
 
 <a id="remotekeyconfig-signature"></a>
 
@@ -689,9 +755,11 @@ export type RemoteKeyConfig = z.infer<typeof remoteKeyConfigSchema>;
 
 ### RemoteKeyDecorator
 
-Source: [src/api/builder.ts:57](../../src/api/builder.ts#L57)
+Source: [src/api/builder.ts:69](../../src/api/builder.ts#L69)
 
-キーを更新する関数。
+操作キーの設定を更新する関数の型。
+
+- キーの色などを共通のルールで変更する。
 
 <a id="remotekeydecorator-signature"></a>
 
@@ -707,12 +775,12 @@ export type RemoteKeyDecorator = (key: RemoteKeyDraft) => RemoteKeyDraft;
 
 Source: [src/api/builder.ts:23](../../src/api/builder.ts#L23)
 
-Builder 内部でキーを組み立てるための中間データ。
+操作キーの設定を組み立てる際に使用する中間データ。
 
-- color は decorator や overrides で決定できるよう、未設定を許容する。
-- showLabel は label の文字列を保持したまま、表示するかどうかを管理する。
-- x / y は配置時に決まるため、draft の生成時点では仮の値を使用する。
-- 最終的な出力形式への変換時に showLabel を解決する。
+- [RemoconBuilder](../rz-remocon-api/remoconbuilder-class.md) 内で [RemoteKey](../rz-remocon-api/index.md#remotekey-interface) を編集可能な形式に変換する。
+- `color` は `decorator` や `overrides` で後から決定できるよう、未設定を許容する。
+- `showLabel` は `label` の文字列を保持したまま、表示するかどうかを管理する。最終的な出力形式への変換時に解決する。
+- `x` / `y` は配置時に決まるため、`draft` の生成時点では仮の値を使用する。
 
 <a id="remotekeydraft-signature"></a>
 
@@ -729,7 +797,9 @@ export type RemoteKeyDraft = Omit<RemoteKeyConfig, "color"> & {
 
 ### RemoteKeyKind
 
-Source: [src/api/key-defs.ts:155](../../src/api/key-defs.ts#L155)
+Source: [src/api/key-defs.ts:158](../../src/api/key-defs.ts#L158)
+
+キーの種類名。
 
 <a id="remotekeykind-signature"></a>
 
@@ -743,7 +813,9 @@ export type RemoteKeyKind = (typeof REMOTE_KEY_KIND_DEFS)[number]["kind"];
 
 ### RemoteKeyName
 
-Source: [src/api/key-defs.ts:138](../../src/api/key-defs.ts#L138)
+Source: [src/api/key-defs.ts:139](../../src/api/key-defs.ts#L139)
+
+標準リモコンのキー定義に登録されているキー名。
 
 <a id="remotekeyname-signature"></a>
 
@@ -757,9 +829,11 @@ export type RemoteKeyName = keyof typeof REMOTE_KEY_DEFS;
 
 ### RemoteKeyOverrides
 
-Source: [src/api/builder.ts:29](../../src/api/builder.ts#L29)
+Source: [src/api/builder.ts:33](../../src/api/builder.ts#L33)
 
-キーに適用する上書き指定。座標 x / y は自動配置専用のため変更できない。
+操作キーの設定に適用する上書き指定。
+
+- 座標 `x` / `y` は自動配置専用のため変更できない。
 
 <a id="remotekeyoverrides-signature"></a>
 
@@ -775,12 +849,11 @@ export type RemoteKeyOverrides = Partial<Omit<RemoteKeyDraft, "x" | "y">>;
 
 ### createColorResolver
 
-Source: [src/api/colors.ts:35](../../src/api/colors.ts#L35)
+Source: [src/api/colors.ts:55](../../src/api/colors.ts#L55)
 
-色マップから、キー名に対応する色を解決する関数を生成する。
+色マップから、[ColorResolver](../rz-remocon-api/index.md#colorresolver-typealias) を生成する。
 
-- キー個別、kind、DEFAULT の順に検索する。
-- DEFAULTは生成時に存在を保証すること！
+- キー個別の色、種類の色、`DEFAULT` の順に検索する。
 
 <a id="createcolorresolver-signature"></a>
 
@@ -796,11 +869,13 @@ export declare function createColorResolver(colors: ColorMap): ColorResolver;
 
 | Parameter | Description |
 | - | - |
-| colors | |
+| colors | キー名または種類名に対応する色のマップ |
 
 <a id="createcolorresolver-returns"></a>
 
 #### Returns
+
+キー名から色を解決する関数。
 
 **Return type**: [ColorResolver](../rz-remocon-api/index.md#colorresolver-typealias)
 
@@ -808,7 +883,9 @@ export declare function createColorResolver(colors: ColorMap): ColorResolver;
 
 ### createDefaultColorMap
 
-Source: [src/api/colors.ts:15](../../src/api/colors.ts#L15)
+Source: [src/api/colors.ts:33](../../src/api/colors.ts#L33)
+
+標準リモコンのキー定義から既定の色マップを生成する。
 
 <a id="createdefaultcolormap-signature"></a>
 
@@ -822,40 +899,9 @@ export declare function createDefaultColorMap(): ColorMap;
 
 #### Returns
 
+色マップ。
+
 **Return type**: [ColorMap](../rz-remocon-api/index.md#colormap-typealias)
-
-<a id="createremotekeydraft-function"></a>
-
-### createRemoteKeyDraft
-
-Source: [src/api/builder.ts:39](../../src/api/builder.ts#L39)
-
-操作キーの定義から、Builder 用の draft を生成する。
-
-- 幅と高さは 1 キー分の unit、座標は配置前の仮の値とする。
-
-<a id="createremotekeydraft-signature"></a>
-
-#### Signature
-
-```typescript
-export declare function createRemoteKeyDraft(key: RemoteKey, unit: number): RemoteKeyDraft;
-```
-
-<a id="createremotekeydraft-parameters"></a>
-
-#### Parameters
-
-| Parameter | Description |
-| - | - |
-| key | 操作キーの定義 |
-| unit | 1 キー分のセル数 |
-
-<a id="createremotekeydraft-returns"></a>
-
-#### Returns
-
-**Return type**: [RemoteKeyDraft](../rz-remocon-api/index.md#remotekeydraft-typealias)
 
 <a id="getclient-function"></a>
 
@@ -870,115 +916,7 @@ Source: [src/api/client.ts:16](../../src/api/client.ts#L16)
 #### Signature
 
 ```typescript
-export declare function getClient(baseUrl: string): {
-    sendCode: import("@orpc/contract").ContractProcedureClient<Record<never, never>, import("zod").ZodObject<{
-        code: import("zod").ZodString;
-    }, import("zod/v4/core").$strip>, import("zod").ZodNumber, import("@orpc/contract").MergedErrorMap<Record<never, never>, {
-        INTERNAL_SERVER_ERROR: {
-            status: number;
-            message: string;
-            data: import("zod").ZodString;
-        };
-    }>>;
-    status: import("@orpc/contract").ContractProcedureClient<Record<never, never>, import("@orpc/contract").Schema<unknown, unknown>, import("zod").ZodNumber, import("@orpc/contract").MergedErrorMap<Record<never, never>, {
-        INTERNAL_SERVER_ERROR: {
-            status: number;
-            message: string;
-            data: import("zod").ZodString;
-        };
-    }>>;
-    editor: {
-        get: import("@orpc/contract").ContractProcedureClient<Record<never, never>, import("@orpc/contract").Schema<unknown, unknown>, import("zod").ZodObject<{
-            revision: import("zod").ZodString;
-            config: import("zod").ZodNullable<import("zod").ZodObject<{
-                version: import("zod").ZodLiteral<1>;
-                grid: import("zod").ZodObject<{
-                    columns: import("zod").ZodNumber;
-                    unit: import("zod").ZodNumber;
-                }, import("zod/v4/core").$strip>;
-                background: import("zod").ZodString;
-                keys: import("zod").ZodArray<import("zod").ZodObject<{
-                    x: import("zod").ZodNumber;
-                    y: import("zod").ZodNumber;
-                    w: import("zod").ZodNumber;
-                    h: import("zod").ZodNumber;
-                    id: import("zod").ZodString;
-                    name: import("zod").ZodString;
-                    code: import("zod").ZodOptional<import("zod").ZodUnion<readonly [import("zod").ZodLiteral<"">, import("zod").ZodString]>>;
-                    label: import("zod").ZodOptional<import("zod").ZodString>;
-                    showLabel: import("zod").ZodBoolean;
-                    icon: import("zod").ZodOptional<import("zod").ZodString>;
-                    color: import("zod").ZodString;
-                }, import("zod/v4/core").$strip>>;
-            }, import("zod/v4/core").$strip>>;
-            invalid: import("zod").ZodBoolean;
-        }, import("zod/v4/core").$strip>, import("@orpc/contract").MergedErrorMap<import("@orpc/contract").MergedErrorMap<Record<never, never>, {
-            INTERNAL_SERVER_ERROR: {
-                status: number;
-                message: string;
-                data: import("zod").ZodString;
-            };
-        }>, {
-            STORAGE_ERROR: {
-                status: number;
-                message: string;
-                data: import("zod").ZodString;
-            };
-            REVISION_CONFLICT: {
-                status: number;
-                message: string;
-                data: import("zod").ZodObject<{
-                    revision: import("zod").ZodString;
-                }, import("zod/v4/core").$strip>;
-            };
-        }>>;
-        save: import("@orpc/contract").ContractProcedureClient<Record<never, never>, import("zod").ZodObject<{
-            revision: import("zod").ZodNullable<import("zod").ZodString>;
-            config: import("zod").ZodObject<{
-                version: import("zod").ZodLiteral<1>;
-                grid: import("zod").ZodObject<{
-                    columns: import("zod").ZodNumber;
-                    unit: import("zod").ZodNumber;
-                }, import("zod/v4/core").$strip>;
-                background: import("zod").ZodString;
-                keys: import("zod").ZodArray<import("zod").ZodObject<{
-                    x: import("zod").ZodNumber;
-                    y: import("zod").ZodNumber;
-                    w: import("zod").ZodNumber;
-                    h: import("zod").ZodNumber;
-                    id: import("zod").ZodString;
-                    name: import("zod").ZodString;
-                    code: import("zod").ZodOptional<import("zod").ZodUnion<readonly [import("zod").ZodLiteral<"">, import("zod").ZodString]>>;
-                    label: import("zod").ZodOptional<import("zod").ZodString>;
-                    showLabel: import("zod").ZodBoolean;
-                    icon: import("zod").ZodOptional<import("zod").ZodString>;
-                    color: import("zod").ZodString;
-                }, import("zod/v4/core").$strip>>;
-            }, import("zod/v4/core").$strip>;
-        }, import("zod/v4/core").$strip>, import("zod").ZodObject<{
-            revision: import("zod").ZodString;
-        }, import("zod/v4/core").$strip>, import("@orpc/contract").MergedErrorMap<import("@orpc/contract").MergedErrorMap<Record<never, never>, {
-            INTERNAL_SERVER_ERROR: {
-                status: number;
-                message: string;
-                data: import("zod").ZodString;
-            };
-        }>, {
-            STORAGE_ERROR: {
-                status: number;
-                message: string;
-                data: import("zod").ZodString;
-            };
-            REVISION_CONFLICT: {
-                status: number;
-                message: string;
-                data: import("zod").ZodObject<{
-                    revision: import("zod").ZodString;
-                }, import("zod/v4/core").$strip>;
-            };
-        }>>;
-    };
-};
+export declare function getClient(baseUrl: string): ContractRouterClient<Contract>;
 ```
 
 <a id="getclient-parameters"></a>
@@ -987,7 +925,7 @@ export declare function getClient(baseUrl: string): {
 
 | Parameter | Description |
 | - | - |
-| baseUrl | API サーバーのベース URL（apiPrefix は含めない） |
+| baseUrl | API サーバーのベース URL（`apiPrefix` は含めない）。 |
 
 <a id="getclient-returns"></a>
 
@@ -995,15 +933,17 @@ export declare function getClient(baseUrl: string): {
 
 API クライアント。
 
+**Return type**: ContractRouterClient<[Contract](../rz-remocon-api/index.md#contract-typealias)>
+
 <a id="isspecialkey-function"></a>
 
 ### isSpecialKey
 
-Source: [src/api/remote-keys.ts:15](../../src/api/remote-keys.ts#L15)
+Source: [src/api/remote-keys.ts:18](../../src/api/remote-keys.ts#L18)
 
-名前が特殊キーかを判定する。
+指定された名前が特殊キーかを判定する。
 
-- 特殊キーはリモコン操作用のキーではなく、レイアウトや表示に使用する。
+- 特殊キーはレイアウトや表示のために使用する。
 
 <a id="isspecialkey-signature"></a>
 
@@ -1019,11 +959,13 @@ export declare function isSpecialKey(name: string): boolean;
 
 | Parameter | Description |
 | - | - |
-| name | |
+| name | 判定するキー名 |
 
 <a id="isspecialkey-returns"></a>
 
 #### Returns
+
+特殊キーの場合は `true`。
 
 **Return type**: boolean
 
@@ -1031,16 +973,18 @@ export declare function isSpecialKey(name: string): boolean;
 
 ### mergeColorMap
 
-Source: [src/api/colors.ts:81](../../src/api/colors.ts#L81)
+Source: [src/api/colors.ts:116](../../src/api/colors.ts#L116)
 
-標準の色（defaultColorMap）に、color-map.json の内容を重ねた色の対応表を返す。同じ名前は後者を優先する。
+既定の色マップに、指定された色マップを上書きして返す。
+
+- 同じ名前が存在する場合は、`overrides` の色を優先する。
 
 <a id="mergecolormap-signature"></a>
 
 #### Signature
 
 ```typescript
-export declare function mergeColorMap(overrides: Record<string, string>): ColorMap;
+export declare function mergeColorMap(overrides: ColorMapInput): ColorMap;
 ```
 
 <a id="mergecolormap-parameters"></a>
@@ -1049,11 +993,13 @@ export declare function mergeColorMap(overrides: Record<string, string>): ColorM
 
 | Parameter | Description |
 | - | - |
-| overrides | parseColorMap() が返した対応表 |
+| overrides | 上書きする色マップ |
 
 <a id="mergecolormap-returns"></a>
 
 #### Returns
+
+既定の色と上書きした色を含む色マップ。
 
 **Return type**: [ColorMap](../rz-remocon-api/index.md#colormap-typealias)
 
@@ -1061,15 +1007,13 @@ export declare function mergeColorMap(overrides: Record<string, string>): ColorM
 
 ### parseColorMap
 
-Source: [src/api/colors.ts:62](../../src/api/colors.ts#L62)
+Source: [src/api/colors.ts:94](../../src/api/colors.ts#L94)
 
-JSON として読み込んだ値を、色の対応表に変換する。
+JSON として読み込んだ値を検証し、色マップに変換する。
 
-- 入力全体が JSON オブジェクトでない場合は、空の対応表とエラーを返す。
-- 項目が不正な場合は、その項目を除外してエラーに記録する。色は #RRGGBB 形式のみ使える。
-- 不正な項目があっても、正常な項目は返す。
-- 名前は、キー名か kind として使われる（どの接頭辞にも当たらないキーは kind が etc になるため、その色は etc で変える）。
-- 標準にない名前も検証せずに受け入れる（icon-urls.json と同じ）。
+- 色は `#RRGGBB` 形式のみ受け付ける。
+- 不正な項目は `errors` に記録し、`colors` には正常な項目のみを残す。
+- キー名や種類名の妥当性は検証しない。
 
 <a id="parsecolormap-signature"></a>
 
@@ -1085,11 +1029,13 @@ export declare function parseColorMap(value: unknown): ColorMapResult;
 
 | Parameter | Description |
 | - | - |
-| value | |
+| value | JSON として読み込んだ値 |
 
 <a id="parsecolormap-returns"></a>
 
 #### Returns
+
+検証に成功した色マップとエラー一覧。
 
 **Return type**: [ColorMapResult](../rz-remocon-api/index.md#colormapresult-typealias)
 
@@ -1097,13 +1043,13 @@ export declare function parseColorMap(value: unknown): ColorMapResult;
 
 ### parseIconUrls
 
-Source: [src/api/icon-urls.ts:51](../../src/api/icon-urls.ts#L51)
+Source: [src/api/icon-urls.ts:62](../../src/api/icon-urls.ts#L62)
 
-JSON として読み込んだ値を、アイコン名と画像 URL の対応表に変換する。
+JSON として読み込んだ値を検証し、アイコン URL 対応表に変換する。
 
-- 入力全体が JSON オブジェクトでない場合は、空の対応表とエラーを返す。
-- 項目が不正な場合は、その項目を除外してエラーに記録する。
-- 不正な項目があっても、正常な項目は返す。
+- 入力全体が JSON オブジェクトでない場合は、空のアイコン URL 対応表とエラーを返す。
+- 不正な項目は `errors` に記録し、`urls` には正常な項目のみを残す。
+- アイコン名の妥当性は検証しない。
 
 <a id="parseiconurls-signature"></a>
 
@@ -1119,41 +1065,45 @@ export declare function parseIconUrls(value: unknown): IconUrlsResult;
 
 | Parameter | Description |
 | - | - |
-| value | |
+| value | JSON として読み込んだ値 |
 
 <a id="parseiconurls-returns"></a>
 
 #### Returns
 
+検証に成功したアイコン URL 対応表とエラー一覧。
+
 **Return type**: [IconUrlsResult](../rz-remocon-api/index.md#iconurlsresult-typealias)
 
-<a id="remotekeysbuilder-function"></a>
+<a id="remoconbuilder-function"></a>
 
-### remoteKeysBuilder
+### remoconBuilder
 
-Source: [src/api/builder.ts:325](../../src/api/builder.ts#L325)
+Source: [src/api/builder.ts:352](../../src/api/builder.ts#L352)
 
-リモコン設定を組み立てる Builder を生成する。
+[RemoconBuilder](../rz-remocon-api/remoconbuilder-class.md) を生成する。
 
-<a id="remotekeysbuilder-signature"></a>
+<a id="remoconbuilder-signature"></a>
 
 #### Signature
 
 ```typescript
-export declare function remoteKeysBuilder(options: RemoconBuilderOptions): RemoconBuilder;
+export declare function remoconBuilder(options: RemoconBuilderOptions): RemoconBuilder;
 ```
 
-<a id="remotekeysbuilder-parameters"></a>
+<a id="remoconbuilder-parameters"></a>
 
 #### Parameters
 
 | Parameter | Description |
 | - | - |
-| options | グリッド幅や背景色、キーの既定値などの設定 |
+| options | オプション |
 
-<a id="remotekeysbuilder-returns"></a>
+<a id="remoconbuilder-returns"></a>
 
 #### Returns
+
+リモコン設定を組み立てる Builder。
 
 **Return type**: [RemoconBuilder](../rz-remocon-api/remoconbuilder-class.md)
 
@@ -1161,78 +1111,19 @@ export declare function remoteKeysBuilder(options: RemoconBuilderOptions): Remoc
 
 ### resolveRemoteKeyKindDef
 
-Source: [src/api/remote-keys.ts:67](../../src/api/remote-keys.ts#L67)
+Source: [src/api/remote-keys.ts:73](../../src/api/remote-keys.ts#L73)
 
-キー名からキーの種類の定義を取得する。
+キー名に対応する種類の定義を取得する。
 
-- 複数の接頭辞が一致する場合は、REMOTE_KEY_KIND_DEFS で先に定義されたものを採用する。 = 一致するものがなければ FALLBACK_KIND の定義を返す。
+- 複数の接頭辞が一致する場合は、`REMOTE_KEY_KIND_DEFS` で先に定義されたものを採用する。
+- 一致する接頭辞がない場合は、`FALLBACK_KIND` に対応する定義を返す。
 
 <a id="resolveremotekeykinddef-signature"></a>
 
 #### Signature
 
 ```typescript
-export declare function resolveRemoteKeyKindDef(name: string): {
-    readonly kind: "power";
-    readonly prefix: "power";
-    readonly label: "電源";
-    readonly color: "#ef4444";
-} | {
-    readonly kind: "volume";
-    readonly prefix: "vol";
-    readonly label: "音量";
-    readonly color: "#f59e0b";
-} | {
-    readonly kind: "channel";
-    readonly prefix: "ch";
-    readonly label: "チャンネル";
-    readonly color: "#10b981";
-} | {
-    readonly kind: "program";
-    readonly prefix: "pg";
-    readonly label: "番組";
-    readonly color: "#6366f1";
-} | {
-    readonly kind: "number";
-    readonly prefix: "num";
-    readonly label: "数字";
-    readonly color: "#0ea5e9";
-} | {
-    readonly kind: "input";
-    readonly prefix: "input";
-    readonly label: "入力切替";
-    readonly color: "#8b5cf6";
-} | {
-    readonly kind: "media";
-    readonly prefix: "media";
-    readonly label: "メディア";
-    readonly color: "#ec4899";
-} | {
-    readonly kind: "button";
-    readonly prefix: "btn";
-    readonly label: "ボタン";
-    readonly color: "#0094ff";
-} | {
-    readonly kind: "app";
-    readonly prefix: "app";
-    readonly label: "アプリ";
-    readonly color: "#000000";
-} | {
-    readonly kind: "key";
-    readonly prefix: "key";
-    readonly label: "キー";
-    readonly color: "#64748b";
-} | {
-    readonly kind: "etc";
-    readonly prefix: "etc";
-    readonly label: "その他";
-    readonly color: "#94a3b8";
-} | {
-    readonly kind: "layout";
-    readonly prefix: "$";
-    readonly label: "レイアウト";
-    readonly color: "#475569";
-};
+export declare function resolveRemoteKeyKindDef(name: string): RemoteKeyKindDef;
 ```
 
 <a id="resolveremotekeykinddef-parameters"></a>
@@ -1241,21 +1132,25 @@ export declare function resolveRemoteKeyKindDef(name: string): {
 
 | Parameter | Description |
 | - | - |
-| name | |
+| name | 種類を判定するキー名 |
 
 <a id="resolveremotekeykinddef-returns"></a>
 
 #### Returns
 
+一致した種類の定義、またはフォールバックの種類の定義。
+
+**Return type**: [RemoteKeyKindDef](../rz-remocon-api/index.md#remotekeykinddef-interface)
+
 <a id="safeapicall-function"></a>
 
 ### safeApiCall
 
-Source: [src/api/client.ts:52](../../src/api/client.ts#L52)
+Source: [src/api/client.ts:60](../../src/api/client.ts#L60)
 
-API 呼び出しを実行し、例外を `ApiResult` に変換して返す。
+API 呼び出しを安全に実行する。
 
-失敗した場合は、API で定義されたエラー、リクエストエラー、 予期しないステータス、ネットワークエラーのいずれかに分類する。
+- 結果を [ApiSuccess](../rz-remocon-api/index.md#apisuccess-typealias) に、例外を [ApiFailure](../rz-remocon-api/index.md#apifailure-typealias) に変換して返す。
 
 <a id="safeapicall-signature"></a>
 
@@ -1292,9 +1187,9 @@ API 呼び出しの結果。
 
 ### toRemoconConfig
 
-Source: [src/api/utils.ts:5](../../src/api/utils.ts#L5)
+Source: [src/api/utils.ts:10](../../src/api/utils.ts#L10)
 
-編集用データから、表示用データを導出する。
+編集用リモコン設定から表示用リモコン設定を生成する。
 
 <a id="toremoconconfig-signature"></a>
 
@@ -1310,11 +1205,13 @@ export declare function toRemoconConfig(editor: EditorRemoconConfig): RemoconCon
 
 | Parameter | Description |
 | - | - |
-| editor | |
+| editor | 編集用リモコン設定 |
 
 <a id="toremoconconfig-returns"></a>
 
 #### Returns
+
+表示用リモコン設定。
 
 **Return type**: [RemoconConfig](../rz-remocon-api/index.md#remoconconfig-typealias)
 
@@ -1324,7 +1221,7 @@ export declare function toRemoconConfig(editor: EditorRemoconConfig): RemoconCon
 
 ### apiPrefix
 
-Source: [src/api/contract.ts:100](../../src/api/contract.ts#L100)
+Source: [src/api/contract.ts:101](../../src/api/contract.ts#L101)
 
 API のパスプレフィックス。
 
@@ -1340,9 +1237,9 @@ apiPrefix = "/api"
 
 ### contract
 
-Source: [src/api/contract.ts:105](../../src/api/contract.ts#L105)
+Source: [src/api/contract.ts:106](../../src/api/contract.ts#L106)
 
-API の契約（エンドポイント定義の集合）。
+API の契約。
 
 <a id="contract-signature"></a>
 
@@ -1464,9 +1361,9 @@ contract: {
 
 ### DEFAULT_BACKGROUND
 
-Source: [src/api/schema.ts:28](../../src/api/schema.ts#L28)
+Source: [src/api/schema.ts:17](../../src/api/schema.ts#L17)
 
-リモコン全体の背景色の既定値（白）。 Builder で背景色を省略した場合、エディタでの新規作成時、読み込み中の表示に使用する。 保存済みファイルでは背景色が必須のため、読み込んだデータには適用しない。
+リモコン全体の既定の背景色。
 
 <a id="default_background-signature"></a>
 
@@ -1480,7 +1377,9 @@ DEFAULT_BACKGROUND = "#ffffff"
 
 ### defaultColorMap
 
-Source: [src/api/colors.ts:42](../../src/api/colors.ts#L42)
+Source: [src/api/colors.ts:67](../../src/api/colors.ts#L67)
+
+標準リモコンのキー定義から生成した既定の色マップ。
 
 <a id="defaultcolormap-signature"></a>
 
@@ -1496,7 +1395,9 @@ defaultColorMap: ColorMap
 
 ### defaultColorResolver
 
-Source: [src/api/colors.ts:44](../../src/api/colors.ts#L44)
+Source: [src/api/colors.ts:72](../../src/api/colors.ts#L72)
+
+既定の色マップを使って色を解決する関数。
 
 <a id="defaultcolorresolver-signature"></a>
 
@@ -1512,18 +1413,14 @@ defaultColorResolver: ColorResolver
 
 ### editorRemoconConfigSchema
 
-Source: [src/api/schema.ts:127](../../src/api/schema.ts#L127)
+Source: [src/api/schema.ts:106](../../src/api/schema.ts#L106)
 
-編集用のリモコン設定（remocon.editor.json）のスキーマ。正本として扱う。
+編集用リモコン設定のスキーマ。
 
-編集内容をそのまま保存する（例: ラベルを隠していても、文字列は残す）。 表示用の remocon.json は、toRemoconConfig()（api/utils.ts）で導出する。
-
-保存時の検証（check）は次の2つのみ。
-
-- キー ID が重複していない。
-- x + w が grid.columns を超えない（幅がはみ出さない）。
-
-y / h の範囲と、キー同士の重なりは検証しない。
+- 編集内容を保持し、非表示のラベルも保存する。
+- 表示用設定は [toRemoconConfig(editor)](../rz-remocon-api/index.md#toremoconconfig-function) で導出する。
+- キー ID の重複と、グリッド幅からのはみ出しを検証する。
+- キーの縦方向の範囲と、キー同士の重なりは検証しない。
 
 <a id="editorremoconconfigschema-signature"></a>
 
@@ -1557,9 +1454,9 @@ editorRemoconConfigSchema: z.ZodObject<{
 
 ### editorRemoteKeyConfigSchema
 
-Source: [src/api/schema.ts:94](../../src/api/schema.ts#L94)
+Source: [src/api/schema.ts:79](../../src/api/schema.ts#L79)
 
-編集用のキー1個分（remocon.editor.json）のスキーマ。
+編集用リモコン設定に含まれるキーのスキーマ。
 
 <a id="editorremotekeyconfigschema-signature"></a>
 
@@ -1585,9 +1482,9 @@ editorRemoteKeyConfigSchema: z.ZodObject<{
 
 ### FALLBACK_KIND
 
-Source: [src/api/key-defs.ts:158](../../src/api/key-defs.ts#L158)
+Source: [src/api/key-defs.ts:161](../../src/api/key-defs.ts#L161)
 
-どの接頭辞にも一致しないキー名に使う種類。
+キー名から種類を特定できない場合に使用する既定の種類。
 
 <a id="fallback_kind-signature"></a>
 
@@ -1603,7 +1500,9 @@ FALLBACK_KIND: RemoteKeyKind
 
 ### hexColorSchema
 
-Source: [src/api/schema.ts:18](../../src/api/schema.ts#L18)
+Source: [src/api/schema.ts:11](../../src/api/schema.ts#L11)
+
+\#RRGGBB 形式の色のスキーマ。
 
 <a id="hexcolorschema-signature"></a>
 
@@ -1617,9 +1516,9 @@ hexColorSchema: z.ZodString
 
 ### keyCodeSchema
 
-Source: [src/api/schema.ts:34](../../src/api/schema.ts#L34)
+Source: [src/api/schema.ts:23](../../src/api/schema.ts#L23)
 
-キーコードのスキーマ
+キーコードのスキーマ。
 
 <a id="keycodeschema-signature"></a>
 
@@ -1633,9 +1532,9 @@ keyCodeSchema: z.ZodString
 
 ### LABEL_KEY_NAME
 
-Source: [src/api/remote-keys.ts:23](../../src/api/remote-keys.ts#L23)
+Source: [src/api/remote-keys.ts:26](../../src/api/remote-keys.ts#L26)
 
-ラベル。描画側では、操作できない表示要素として扱う。
+ラベルを表す特殊キー名。表示要素として扱う。
 
 <a id="label_key_name-signature"></a>
 
@@ -1649,9 +1548,9 @@ LABEL_KEY_NAME = "$_LABEL$"
 
 ### remoconConfigSchema
 
-Source: [src/api/schema.ts:81](../../src/api/schema.ts#L81)
+Source: [src/api/schema.ts:64](../../src/api/schema.ts#L64)
 
-表示用のリモコン設定（remocon.json）のスキーマ。リモコン画面（/）が読み込んで描画する。
+表示用リモコン設定のスキーマ。
 
 <a id="remoconconfigschema-signature"></a>
 
@@ -1685,10 +1584,10 @@ remoconConfigSchema: z.ZodObject<{
 
 Source: [src/api/key-defs.ts:16](../../src/api/key-defs.ts#L16)
 
-REGZA のリモコンキーの定義（キー名から code とラベルへの対応表）。
+REGZA の標準リモコンのキー定義。
 
-- 異なるキーが同じ code を持つ場合があるが、これは意図的な定義である。  例: keyLeft2 と mediaBack10s、keyRight2 と mediaSkip30s は code を共有する。
-- code の重複は不具合ではないため、重複の検出や統合は行わない。
+- キー名から、送信するキーコード（`code`）と表示用の `label` を引く対応表。
+- 異なるキーが同じキーコード（`code`）を持つことが可能。
 
 <a id="remote_key_defs-signature"></a>
 
@@ -1750,7 +1649,7 @@ REMOTE_KEY_DEFS: {
     };
     readonly chToggle: {
         readonly code: "40BF79";
-        readonly label: "放送切替";
+        readonly label: "放送切換";
     };
     readonly chNumber: {
         readonly code: "40BF60";
@@ -1906,7 +1805,7 @@ REMOTE_KEY_DEFS: {
     };
     readonly mediaSkip30s: {
         readonly code: "40BE23";
-        readonly label: "30sec送り";
+        readonly label: "30秒送り";
     };
     readonly mediaRecord: {
         readonly code: "40BF86";
@@ -2079,7 +1978,9 @@ REMOTE_KEY_DEFS: {
 
 ### REMOTE_KEY_KIND_DEFS
 
-Source: [src/api/key-defs.ts:140](../../src/api/key-defs.ts#L140)
+Source: [src/api/key-defs.ts:142](../../src/api/key-defs.ts#L142)
+
+キーの種類ごとの接頭辞、表示名、既定色の定義。
 
 <a id="remote_key_kind_defs-signature"></a>
 
@@ -2114,7 +2015,7 @@ REMOTE_KEY_KIND_DEFS: readonly [{
 }, {
     readonly kind: "input";
     readonly prefix: "input";
-    readonly label: "入力切替";
+    readonly label: "入力切換";
     readonly color: "#8b5cf6";
 }, {
     readonly kind: "media";
@@ -2153,9 +2054,9 @@ REMOTE_KEY_KIND_DEFS: readonly [{
 
 ### remoteKeyConfigSchema
 
-Source: [src/api/schema.ts:58](../../src/api/schema.ts#L58)
+Source: [src/api/schema.ts:43](../../src/api/schema.ts#L43)
 
-表示用のキー1個分（remocon.json）のスキーマ。 editorRemoteKeyConfigSchema から導出する（api/utils.ts の toRemoconConfig）。 編集用の id と showLabel は持たない。
+表示用リモコン設定に含まれるキーのスキーマ。
 
 <a id="remotekeyconfigschema-signature"></a>
 
@@ -2179,11 +2080,11 @@ remoteKeyConfigSchema: z.ZodObject<{
 
 ### RemoteKeys
 
-Source: [src/api/remote-keys.ts:88](../../src/api/remote-keys.ts#L88)
+Source: [src/api/remote-keys.ts:91](../../src/api/remote-keys.ts#L91)
 
-操作キーの定義表を、name を含むキーオブジェクトの辞書に変換したもの。
+キー名と操作キー定義の対応表。
 
-- キー名から定義を参照しつつ、Builder にはキーオブジェクトを渡せるようにする。
+[RemoconBuilder](../rz-remocon-api/remoconbuilder-class.md) の引数に使用できる。
 
 <a id="remotekeys-signature"></a>
 
@@ -2199,9 +2100,9 @@ RemoteKeys: Record<RemoteKeyName, RemoteKey>
 
 ### SPECIAL_KEY_DEFS
 
-Source: [src/api/remote-keys.ts:40](../../src/api/remote-keys.ts#L40)
+Source: [src/api/remote-keys.ts:41](../../src/api/remote-keys.ts#L41)
 
-特殊キー名の定義。
+特殊キー名と定義の対応表。
 
 <a id="special_key_defs-signature"></a>
 
@@ -2224,9 +2125,9 @@ SPECIAL_KEY_DEFS: {
 
 ### TAB_KEY_NAME
 
-Source: [src/api/remote-keys.ts:20](../../src/api/remote-keys.ts#L20)
+Source: [src/api/remote-keys.ts:23](../../src/api/remote-keys.ts#L23)
 
-タブ。描画側では、この名前を全幅の見出しとして扱う。
+タブを表す特殊キー名。
 
 <a id="tab_key_name-signature"></a>
 

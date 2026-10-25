@@ -230,7 +230,7 @@ describe("createGenerateToolsWithUrls", () => {
     expect(out("powerOn")).toContain('src="/my-power.svg"');
   });
 
-  it("表が空なら、標準のアイコンだけ（createGenerateTools(builtinIcons) と同じ）", () => {
+  it("表が空なら、標準のアイコンだけ（createGenerateTools([builtinIcons]) と同じ）", () => {
     const empty = createGenerateToolsWithUrls({});
     const plain = createGenerateTools([builtinIcons]);
     for (const name of ["powerOn", "logo", "chDTT"]) {
@@ -238,7 +238,7 @@ describe("createGenerateToolsWithUrls", () => {
     }
   });
 
-  it("createGenerateTools(builtinIcons, fromUrls(urls)) と同じ結果になる", () => {
+  it("createGenerateTools([builtinIcons, fromUrls(urls)]) と同じ結果になる", () => {
     const manual = createGenerateTools([builtinIcons, fromUrls(urls)]);
     for (const name of ["powerOn", "powerOff", "logo", "chDTT"]) {
       expect(tools.hasIcon(name)).toBe(manual.hasIcon(name));

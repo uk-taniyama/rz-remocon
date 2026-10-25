@@ -1,8 +1,8 @@
 /*
  * エディタのカタログ（追加できるキーの一覧）。
  * REGZA のキー、特殊キー（タブ・ラベル）、任意のコードを持つカスタムキーを、
- * 追加用の項目（RemoteKeyCatalogEntry）として扱う。
- * 描画は行わない。アイコンの有無は、createEditorCatalog の引数 hasIcon で決める。
+ * 追加用の項目（`RemoteKeyCatalogEntry`）として扱う。
+ * 描画は行わない。アイコンの有無は、`createEditorCatalog` の引数 `hasIcon` で決める。
  */
 import type { ReactNode } from "react";
 import {
@@ -42,9 +42,9 @@ export type HasIcon = (name: string) => boolean;
 
 /**
  * カタログの全項目（REGZA のキーと、特殊キー）を生成する。
- * アイコンがあるキーは、icon にキー名を設定し、ラベルを隠す（Builder の decorator と同じ）。
- * hasIcon が true を返すキー名を、アイコンありとして扱う。
- * useEditorData は、useIconSet の hasIcon（標準のアイコンと icon-urls.json の対応表）を渡す。
+ * アイコンがあるキーは、`icon` にキー名を設定し、ラベルを隠す（Builder の decorator と同じ）。
+ * `hasIcon` が `true` を返すキー名を、アイコンありとして扱う。
+ * `useEditorData` は、`useIconSet` の `hasIcon`（標準のアイコンとアイコン URL 対応表（`icon-urls.json`））を渡す。
  *
  * @param hasIcon - 指定した名前のアイコンが存在するかを返す関数。
  */
@@ -82,8 +82,8 @@ export function createEditorCatalog(
 }
 
 /**
- * カタログの項目のアイコンを描画する。icon がない場合は null を返す。
- * 描画関数には、キー一覧と同じもの（標準のアイコンと icon-urls.json の対応表を使用するもの）を渡す。
+ * カタログの項目のアイコンを描画する。`icon` がない場合は `null` を返す。
+ * 描画関数には、キー一覧と同じもの（標準のアイコンとアイコン URL 対応表（`icon-urls.json`）を使用するもの）を渡す。
  */
 export function renderCatalogIcon(
   entry: RemoteKeyCatalogEntry,

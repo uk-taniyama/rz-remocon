@@ -1,5 +1,5 @@
 /*
- * 静的リモコンの出力に使う、ビルド済みの静的ファイル（CSS、remote.js、favicon.svg）の扱い。
+ * 静的リモコンの出力に使う、ビルド済みの静的ファイル（CSS、`remote.js`、`favicon.svg`）の扱い。
  */
 import { copyFileSync, mkdirSync, readFileSync } from "node:fs";
 import path from "node:path";
@@ -10,21 +10,21 @@ const dir = path.dirname(fileURLToPath(import.meta.url));
 /**
  * ビルド済みの静的ファイルが置かれたディレクトリのパスを返す。
  *
- * @param isDev - true の場合は、開発用の出力先（dist/public）を返す。
+ * @param isDev - `true` の場合は、開発用の出力先（`dist/public`）を返す。
  */
 export function resolvePublicDir(isDev?: boolean): string {
   return isDev ? path.join(dir, "../../dist/public") : path.join(dir, "public");
 }
 
 /**
- * index.html が参照する CSS ファイルの名前を特定する。
+ * `index.html` が参照する CSS ファイルの名前を特定する。
  *
  * - CSS のファイル名には依存しない。
- * - stylesheet として参照されている CSS がちょうど 1 つであることを検証する。
+ * - `stylesheet` として参照されている CSS がちょうど 1 つであることを検証する。
  *
- * @param publicDir - index.html を含むディレクトリ。
+ * @param publicDir - `index.html` を含むディレクトリ。
  * @returns assets/ 内の CSS ファイル名。
- * @throws stylesheet として参照されている CSS が 1 つでない場合。
+ * @throws `stylesheet` として参照されている CSS が 1 つでない場合。
  */
 export function findCssFile(publicDir: string): string {
   const html = readFileSync(path.join(publicDir, "index.html"), "utf8");
@@ -44,10 +44,10 @@ export function findCssFile(publicDir: string): string {
 }
 
 /**
- * 静的リモコンの出力先に、assets/ 内のファイルと favicon.svg をコピーする。
+ * 静的リモコンの出力先に、assets/ 内のファイルと `favicon.svg` をコピーする。
  *
  * - コピー元とコピー先が同じファイルの場合は、コピーしない。
- * - HTML が /favicon.svg を参照するため、favicon.svg は出力先の直下にコピーする。
+ * - HTML が /favicon.svg を参照するため、`favicon.svg` は出力先の直下にコピーする。
  *
  * @param publicDir - ビルド済みの静的ファイルが置かれたディレクトリ。
  * @param outDir - 出力先のディレクトリ。存在しない場合は作成する。

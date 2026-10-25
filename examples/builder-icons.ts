@@ -1,6 +1,6 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { createElement, type CSSProperties } from "react";
-import { RemoteKeys, remoteKeysBuilder } from "rz-remocon/api";
+import { RemoteKeys, remoconBuilder } from "rz-remocon/api";
 import {
   builtinIcons,
   createGenerateTools,
@@ -50,7 +50,7 @@ const { decorator, iconRender } = createGenerateTools([
   fromUrls({ dot }),
 ]);
 
-const remocon = remoteKeysBuilder({
+const remocon = remoconBuilder({
   columns: 20,
   background: "#0f172a",
   decorator,

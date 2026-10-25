@@ -1,10 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { RemoteKeys, remoconConfigSchema, remoteKeysBuilder } from "../api";
+import { RemoteKeys, remoconBuilder, remoconConfigSchema } from "../api";
 import { defaultDecorator } from "./index";
 
 describe("generate", () => {
   it("usecase", async () => {
-    const remocon = remoteKeysBuilder({
+    const remocon = remoconBuilder({
       columns: 20, // 5キー分の幅
       background: "#0f172a",
       decorator: defaultDecorator,
@@ -44,7 +44,7 @@ describe("generate", () => {
   });
 
   it("icon は名前のまま持つので、version を付ければ remocon.json にできる", () => {
-    const remocon = remoteKeysBuilder({
+    const remocon = remoconBuilder({
       columns: 20,
       background: "#0f172a",
       decorator: defaultDecorator,
@@ -61,7 +61,7 @@ describe("generate", () => {
   });
 
   it("color は decorator、overrides の順に決まり、なければ背景色になる", () => {
-    const keys = remoteKeysBuilder({ columns: 20, background: "#0f172a" })
+    const keys = remoconBuilder({ columns: 20, background: "#0f172a" })
       .add(RemoteKeys.powerOn) // decorator なし、色の指定なし → カテゴリーの色
       .add(RemoteKeys.powerOn, { color: "#123456" }) // 色の指定あり
       .add(RemoteKeys.btnBlue) // キー定義の色
@@ -75,7 +75,7 @@ describe("generate", () => {
   });
 
   it("標準のアイコンがないキーは、ラベルを残す", () => {
-    const [key] = remoteKeysBuilder({
+    const [key] = remoconBuilder({
       columns: 20,
       decorator: defaultDecorator,
     })
@@ -87,7 +87,7 @@ describe("generate", () => {
   });
 
   it("addCustom のラベルは、overrides で指定したときだけ出る", () => {
-    const keys = remoteKeysBuilder({ columns: 20 })
+    const keys = remoconBuilder({ columns: 20 })
       .addCustom("custom", "40BF7E")
       .addCustom("custom", "", { label: "メモ" })
       .build().keys;
@@ -97,7 +97,7 @@ describe("generate", () => {
   });
 
   it("build() の後に add() しても、返した結果は変わらない", () => {
-    const builder = remoteKeysBuilder({ columns: 20 }).add(RemoteKeys.powerOn);
+    const builder = remoconBuilder({ columns: 20 }).add(RemoteKeys.powerOn);
     const remocon = builder.build();
 
     builder.add(RemoteKeys.volUp);

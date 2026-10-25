@@ -1,6 +1,6 @@
 {
   "name": "rz-remocon",
-  "version": "0.0.0-alpha.1",
+  "version": "1.0.0",
   "license": "MIT",
   "type": "module",
   "bin": {
@@ -30,13 +30,14 @@
     "dev": "concurrently -k -n server,web -c blue,green \"npm:dev:server\" \"npm:dev:web\"",
     "dev:web": "vite",
     "dev:server": "tsx watch src/cli/index.ts server -p 8484 -d ./dist/public",
+    "md": "markserv",
     "cli": "tsx src/cli/index.ts",
     "default-remocon": "tsx --tsconfig tsconfig.gen.json src/gen/default-remocon.ts data",
     "build": "./scripts/build.sh",
     "test": "vitest",
     "tsc": "tsc -b --noEmit",
     "check": "biome check --write .",
-    "lint": "npm run check && npm run tsc"
+    "lint": "concurrently -m 1 -n biome,tsc -c blue,green \"npm:check\" \"npm:tsc\""
   },
   "dependencies": {
     "@hono/node-server": "^2.1.1",
@@ -58,6 +59,8 @@
     "@biomejs/biome": "^2.5.14",
     "@fluid-tools/api-markdown-documenter": "^0.24.0",
     "@microsoft/api-extractor": "^7.59.4",
+    "@microsoft/api-extractor-model": "^7.33.15",
+    "@microsoft/tsdoc": "^0.17.1",
     "@types/markdown-it": "^14.2.0",
     "@types/node": "^26.6.2",
     "@types/react": "^19.2.18",

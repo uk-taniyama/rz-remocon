@@ -3,14 +3,14 @@ import { contract } from "../api";
 import { getPublicSupport, getToken, sendKeyCode } from "../lib";
 import { loadEditorConfig, saveEditorConfig } from "./editor-storage";
 
-/** 例外を、API のエラーの data（メッセージ文字列）に変換する。 */
+/** 例外を、API のエラーの `data`（メッセージ文字列）に変換する。 */
 function normalizeError(error: unknown) {
   return { data: error instanceof Error ? error.message : String(error) };
 }
 
 const base = implement(contract);
 
-/** 想定外の例外を、INTERNAL_SERVER_ERROR に変換するミドルウェア。 */
+/** 想定外の例外を、`INTERNAL_SERVER_ERROR` に変換するミドルウェア。 */
 const catchUnexpectedErrors = base.middleware(async ({ next, errors }) => {
   try {
     return await next();

@@ -2,42 +2,42 @@
 
 # rz-remocon/gen
 
+静的リモコンの生成と、その見た目（アイコン・色・キーの装飾）をカスタマイズする部品を提供する。
+
 ## Interfaces
 
 | Interface | Description |
 | - | - |
-| [DefaultDecoratorOpts](../rz-remocon-gen/index.md#defaultdecoratoropts-interface) | 標準の decorator のオプション |
-| [GenerateFromFileOpts](../rz-remocon-gen/index.md#generatefromfileopts-interface) | generateFromFile() のオプション |
-| [GenerateOpts](../rz-remocon-gen/index.md#generateopts-interface) | generate() のオプション |
-| [GenerateTools](../rz-remocon-gen/index.md#generatetools-interface) | |
+| [DefaultDecoratorOpts](../rz-remocon-gen/index.md#defaultdecoratoropts-interface) | 標準の `decorator`（[defaultDecorator(key, opts)](../rz-remocon-gen/index.md#defaultdecorator-function)）のオプション。 |
+| [GenerateOpts](../rz-remocon-gen/index.md#generateopts-interface) | `generate()` のオプション。 |
+| [GenerateTools](../rz-remocon-gen/index.md#generatetools-interface) | 生成時に使うアイコン・色・装飾のユーティリティ一式 |
 
 ## Types
 
 | TypeAlias | Description |
 | - | - |
-| [IconComponent](../rz-remocon-gen/index.md#iconcomponent-typealias) | style を受け取る、素のアイコンコンポーネント |
+| [IconComponent](../rz-remocon-gen/index.md#iconcomponent-typealias) | `style` を受け取る、素のアイコンコンポーネント。サイズは指定されていない。 |
 | [IconSet](../rz-remocon-gen/index.md#iconset-typealias) | アイコンセット |
-| [OnChangeCode](../rz-remocon-gen/index.md#onchangecode-typealias) | キーコードが指定されたときに呼び出されるコールバック |
-| [RemoteKeyIconRender](../rz-remocon-gen/index.md#remotekeyiconrender-typealias) | キーのアイコンを描画する関数 |
+| [RemoteKeyIconRender](../rz-remocon-gen/index.md#remotekeyiconrender-typealias) | キーのアイコンを、必要に応じて描画する関数の型 |
 
 ## Functions
 
 | Function | Description |
 | - | - |
-| [createGenerateTools(sets, colorResolver)](../rz-remocon-gen/index.md#creategeneratetools-function) | アイコンセットを結合し、hasIcon、decorator、iconRender を生成する |
-| [createGenerateToolsWithUrls(urls, colorResolver)](../rz-remocon-gen/index.md#creategeneratetoolswithurls-function) | アイコン対応表を加えた GenerateTools を作成する |
-| [defaultDecorator(key, opts)](../rz-remocon-gen/index.md#defaultdecorator-function) | キーの既定値を決める、標準の decorator |
+| [createGenerateTools(sets, colorResolver)](../rz-remocon-gen/index.md#creategeneratetools-function) | アイコンセットを結合し、[GenerateTools](../rz-remocon-gen/index.md#generatetools-interface) を生成する |
+| [createGenerateToolsWithUrls(urls, colorResolver)](../rz-remocon-gen/index.md#creategeneratetoolswithurls-function) | アイコン URL 対応表を加えた [GenerateTools](../rz-remocon-gen/index.md#generatetools-interface) を生成する |
+| [defaultDecorator(key, opts)](../rz-remocon-gen/index.md#defaultdecorator-function) | キーの既定値を決める、標準の <code>decorator</code> |
 | [fromComponents(icons, size)](../rz-remocon-gen/index.md#fromcomponents-function) | コンポーネントの対応表から、アイコンセットを生成する |
-| [fromUrls(urls)](../rz-remocon-gen/index.md#fromurls-function) | 画像 URL の対応表から、アイコンセットを生成する |
-| [generate(input)](../rz-remocon-gen/index.md#generate-function) | Builder の build() が返したリモコン設定から、静的リモコンを生成する |
-| [loadColorMapFile(file, required)](../rz-remocon-gen/index.md#loadcolormapfile-function) | <code>color-map.json</code> を読み込み、キー名・kind から色への対応表を返す |
-| [loadIconUrlsFile(file, required)](../rz-remocon-gen/index.md#loadiconurlsfile-function) | <code>icon-urls.json</code> を読み込み、アイコン名と画像 URL の対応表を返す |
+| [fromUrls(urls)](../rz-remocon-gen/index.md#fromurls-function) | アイコン URL 対応表から、アイコンセットを生成する |
+| [generate(opts)](../rz-remocon-gen/index.md#generate-function) | リモコン設定から、静的リモコン用 HTML を生成する |
+| [loadColorMapFile(file, required)](../rz-remocon-gen/index.md#loadcolormapfile-function) | <code>color-map.json</code> を読み込み、色マップを返す |
+| [loadIconUrlsFile(file, required)](../rz-remocon-gen/index.md#loadiconurlsfile-function) | ファイルを読み込み、アイコン URL 対応表を返す |
 
 ## Variables
 
 | Variable | Description |
 | - | - |
-| [builtinIcons](../rz-remocon-gen/index.md#builtinicons-variable) | 標準のアイコン（REMOTE_ICONS）から生成した、アイコンセット |
+| [builtinIcons](../rz-remocon-gen/index.md#builtinicons-variable) | 標準のアイコン（`REMOTE_ICONS`）から生成したアイコンセット。 |
 | [defaultIconRender](../rz-remocon-gen/index.md#defaulticonrender-variable) | アイコンを描画する標準の関数 |
 
 ## Interface Details
@@ -46,9 +46,9 @@
 
 ### DefaultDecoratorOpts
 
-Source: [src/web/remoteKeys/types.ts:27](../../src/web/remoteKeys/types.ts#L27)
+Source: [src/web/remoteKeys/types.ts:26](../../src/web/remoteKeys/types.ts#L26)
 
-標準の decorator のオプション。
+標準の `decorator`（[defaultDecorator(key, opts)](../rz-remocon-gen/index.md#defaultdecorator-function)）のオプション。
 
 <a id="defaultdecoratoropts-signature"></a>
 
@@ -62,7 +62,7 @@ export interface DefaultDecoratorOpts
 
 | Property | Description |
 | - | - |
-| [keepLabel](../rz-remocon-gen/index.md#defaultdecoratoropts-keeplabel-propertysignature) | true の場合は、アイコンがあるキーでも、ラベルを隠さない |
+| [keepLabel](../rz-remocon-gen/index.md#defaultdecoratoropts-keeplabel-propertysignature) | `true` の場合は、アイコンがあるキーでも、ラベルを隠さない。 |
 
 #### Property Details
 
@@ -70,7 +70,7 @@ export interface DefaultDecoratorOpts
 
 ##### keepLabel
 
-true の場合は、アイコンがあるキーでも、ラベルを隠さない。
+`true` の場合は、アイコンがあるキーでも、ラベルを隠さない。
 
 <a id="keeplabel-signature"></a>
 
@@ -82,87 +82,13 @@ keepLabel?: boolean;
 
 **Type**: boolean
 
-<a id="generatefromfileopts-interface"></a>
-
-### GenerateFromFileOpts
-
-Source: [src/gen/types.ts:4](../../src/gen/types.ts#L4)
-
-generateFromFile() のオプション。
-
-<a id="generatefromfileopts-signature"></a>
-
-#### Signature
-
-```typescript
-export interface GenerateFromFileOpts
-```
-
-#### Properties
-
-| Property | Description |
-| - | - |
-| [iconUrls](../rz-remocon-gen/index.md#generatefromfileopts-iconurls-propertysignature) | アイコン名と画像 URL の対応表（icon-urls.json）のパス |
-| [inputJson](../rz-remocon-gen/index.md#generatefromfileopts-inputjson-propertysignature) | 入力する remocon.json のパス |
-| [outputDir](../rz-remocon-gen/index.md#generatefromfileopts-outputdir-propertysignature) | 出力先のディレクトリ |
-
-#### Property Details
-
-<a id="generatefromfileopts-iconurls-propertysignature"></a>
-
-##### iconUrls
-
-アイコン名と画像 URL の対応表（icon-urls.json）のパス。 省略した場合は、入力の remocon.json と同じディレクトリの icon-urls.json を使用する（存在しなければ空の対応表）。 指定したファイルが見つからない場合は、エラーにする。
-
-<a id="iconurls-signature"></a>
-
-###### Signature
-
-```typescript
-iconUrls?: string;
-```
-
-**Type**: string
-
-<a id="generatefromfileopts-inputjson-propertysignature"></a>
-
-##### inputJson
-
-入力する remocon.json のパス。
-
-<a id="inputjson-signature"></a>
-
-###### Signature
-
-```typescript
-inputJson: string;
-```
-
-**Type**: string
-
-<a id="generatefromfileopts-outputdir-propertysignature"></a>
-
-##### outputDir
-
-出力先のディレクトリ。index.html と assets/ を出力する。
-
-<a id="outputdir-signature"></a>
-
-###### Signature
-
-```typescript
-outputDir: string;
-```
-
-**Type**: string
-
 <a id="generateopts-interface"></a>
 
 ### GenerateOpts
 
 Source: [src/gen/generate.ts:21](../../src/gen/generate.ts#L21)
 
-generate() のオプション。
+`generate()` のオプション。
 
 <a id="generateopts-signature"></a>
 
@@ -178,7 +104,7 @@ export interface GenerateOpts
 | - | - |
 | [iconRender](../rz-remocon-gen/index.md#generateopts-iconrender-propertysignature) | アイコンを描画する関数 |
 | [outputDir](../rz-remocon-gen/index.md#generateopts-outputdir-propertysignature) | 生成した静的リモコンの出力先ディレクトリ |
-| [remocon](../rz-remocon-gen/index.md#generateopts-remocon-propertysignature) | Builder の build() が返したリモコン設定 |
+| [remocon](../rz-remocon-gen/index.md#generateopts-remocon-propertysignature) | リモコン設定 |
 
 #### Property Details
 
@@ -186,7 +112,7 @@ export interface GenerateOpts
 
 ##### iconRender
 
-アイコンを描画する関数。 key.icon には、アイコン名または画像 URL が渡される。 標準の描画関数として、defaultIconRender を使用できる。
+アイコンを描画する関数。標準の描画関数として、[defaultIconRender](../rz-remocon-gen/index.md#defaulticonrender-variable) を使用可能。
 
 <a id="iconrender-signature"></a>
 
@@ -218,7 +144,7 @@ outputDir: string;
 
 ##### remocon
 
-Builder の build() が返したリモコン設定。
+リモコン設定。
 
 <a id="remocon-signature"></a>
 
@@ -234,7 +160,9 @@ remocon: RemoconConfig;
 
 ### GenerateTools
 
-Source: [src/web/remoteKeys/utils.ts:51](../../src/web/remoteKeys/utils.ts#L51)
+Source: [src/web/remoteKeys/utils.ts:56](../../src/web/remoteKeys/utils.ts#L56)
+
+生成時に使うアイコン・色・装飾のユーティリティ一式。
 
 <a id="generatetools-signature"></a>
 
@@ -248,16 +176,18 @@ export interface GenerateTools
 
 | Property | Description |
 | - | - |
-| [colorResolver](../rz-remocon-gen/index.md#generatetools-colorresolver-propertysignature) | |
-| [decorator](../rz-remocon-gen/index.md#generatetools-decorator-propertysignature) | |
-| [hasIcon](../rz-remocon-gen/index.md#generatetools-hasicon-propertysignature) | |
-| [iconRender](../rz-remocon-gen/index.md#generatetools-iconrender-propertysignature) | |
+| [colorResolver](../rz-remocon-gen/index.md#generatetools-colorresolver-propertysignature) | キー名から色を解決する関数 |
+| [decorator](../rz-remocon-gen/index.md#generatetools-decorator-propertysignature) | `hasIcon` が `true` になるキー名を、`icon` に設定するなど、キーの既定値を決める関数。 |
+| [hasIcon](../rz-remocon-gen/index.md#generatetools-hasicon-propertysignature) | 指定した名前のアイコンが存在するかを返す |
+| [iconRender](../rz-remocon-gen/index.md#generatetools-iconrender-propertysignature) | アイコンを描画する関数 |
 
 #### Property Details
 
 <a id="generatetools-colorresolver-propertysignature"></a>
 
 ##### colorResolver
+
+キー名から色を解決する関数。
 
 <a id="colorresolver-signature"></a>
 
@@ -273,6 +203,8 @@ colorResolver: ColorResolver;
 
 ##### decorator
 
+`hasIcon` が `true` になるキー名を、`icon` に設定するなど、キーの既定値を決める関数。
+
 <a id="decorator-signature"></a>
 
 ###### Signature
@@ -287,6 +219,8 @@ decorator: (key: RemoteKeyDraft, opts?: DefaultDecoratorOpts) => RemoteKeyDraft;
 
 ##### hasIcon
 
+指定した名前のアイコンが存在するかを返す。
+
 <a id="hasicon-signature"></a>
 
 ###### Signature
@@ -300,6 +234,8 @@ hasIcon: (name: string) => boolean;
 <a id="generatetools-iconrender-propertysignature"></a>
 
 ##### iconRender
+
+アイコンを描画する関数。アイコンセットにない文字列は、画像 URL として描画する。
 
 <a id="iconrender-signature"></a>
 
@@ -317,9 +253,9 @@ iconRender: RemoteKeyIconRender;
 
 ### IconComponent
 
-Source: [src/web/remoteKeys/types.ts:18](../../src/web/remoteKeys/types.ts#L18)
+Source: [src/web/remoteKeys/types.ts:16](../../src/web/remoteKeys/types.ts#L16)
 
-style を受け取る、素のアイコンコンポーネント。サイズは指定されていない。
+`style` を受け取る、素のアイコンコンポーネント。サイズは指定されていない。
 
 <a id="iconcomponent-signature"></a>
 
@@ -335,9 +271,11 @@ export type IconComponent = ComponentType<{
 
 ### IconSet
 
-Source: [src/web/remoteKeys/types.ts:24](../../src/web/remoteKeys/types.ts#L24)
+Source: [src/web/remoteKeys/types.ts:23](../../src/web/remoteKeys/types.ts#L23)
 
-アイコンセット。アイコン名から描画関数を引く対応表。 アイコンのライブラリが異なる場合も、fromComponents などで、この形式に統一する。
+アイコンセット。アイコン名ごとの描画関数をまとめたもの。
+
+アイコンのライブラリが異なる場合も、[fromComponents(icons, size)](../rz-remocon-gen/index.md#fromcomponents-function) などで、この形式に統一する。
 
 <a id="iconset-signature"></a>
 
@@ -347,29 +285,15 @@ Source: [src/web/remoteKeys/types.ts:24](../../src/web/remoteKeys/types.ts#L24)
 export type IconSet = Record<string, RemoteKeyIconRender>;
 ```
 
-<a id="onchangecode-typealias"></a>
-
-### OnChangeCode
-
-Source: [src/web/remoteKeys/types.ts:9](../../src/web/remoteKeys/types.ts#L9)
-
-キーコードが指定されたときに呼び出されるコールバック。
-
-<a id="onchangecode-signature"></a>
-
-#### Signature
-
-```typescript
-export type OnChangeCode = (value: string) => void;
-```
-
 <a id="remotekeyiconrender-typealias"></a>
 
 ### RemoteKeyIconRender
 
-Source: [src/web/remoteKeys/types.ts:15](../../src/web/remoteKeys/types.ts#L15)
+Source: [src/web/remoteKeys/types.ts:13](../../src/web/remoteKeys/types.ts#L13)
 
-キーのアイコンを描画する関数。key.icon には、アイコン名または画像 URL の文字列が入る。 要素を返した場合はそれを表示し、null または undefined を返した場合は何も描画しない。
+キーのアイコンを、必要に応じて描画する関数の型。
+
+- `key.icon` は、アイコン名または画像 URL（省略可能）。
 
 <a id="remotekeyiconrender-signature"></a>
 
@@ -385,13 +309,11 @@ export type RemoteKeyIconRender = (key: RemoteKeyConfig) => ReactNode;
 
 ### createGenerateTools
 
-Source: [src/web/remoteKeys/utils.ts:70](../../src/web/remoteKeys/utils.ts#L70)
+Source: [src/web/remoteKeys/utils.ts:78](../../src/web/remoteKeys/utils.ts#L78)
 
-アイコンセットを結合し、hasIcon、decorator、iconRender を生成する。 同じ名前がある場合は、sets の後ろにあるものを優先する（上書きする）。
+アイコンセットを結合し、[GenerateTools](../rz-remocon-gen/index.md#generatetools-interface) を生成する。
 
-- hasIcon: 結合した対応表に、指定した名前が存在するかを返す。
-- decorator: hasIcon が true になるキー名を、icon に設定する。
-- iconRender: 対応表にある名前は、その描画関数で描画する。対応表にない文字列は、画像 URL として描画する。
+- 同じ名前がある場合は、`sets` の後ろにあるものを優先する（上書きする）。
 
 <a id="creategeneratetools-signature"></a>
 
@@ -408,7 +330,7 @@ export declare function createGenerateTools(sets: IconSet[], colorResolver?: Col
 | Parameter | Description |
 | - | - |
 | sets | 結合するアイコンセット |
-| colorResolver | |
+| colorResolver | キー名から色を解決する関数 |
 
 <a id="creategeneratetools-returns"></a>
 
@@ -420,13 +342,13 @@ export declare function createGenerateTools(sets: IconSet[], colorResolver?: Col
 
 ### createGenerateToolsWithUrls
 
-Source: [src/web/remoteKeys/utils.ts:93](../../src/web/remoteKeys/utils.ts#L93)
+Source: [src/web/remoteKeys/utils.ts:102](../../src/web/remoteKeys/utils.ts#L102)
 
-アイコン対応表を加えた GenerateTools を作成する。
+アイコン URL 対応表を加えた [GenerateTools](../rz-remocon-gen/index.md#generatetools-interface) を生成する。
 
-- 標準のアイコン（builtinIcons）に、icon-urls.json の対応表を加える。
-- 同じ名前は対応表を優先するので、標準のアイコンを差し替えられる。
-- createGenerateTools(builtinIcons, fromUrls(urls)) と同じ。
+- 標準のアイコン（[builtinIcons](../rz-remocon-gen/index.md#builtinicons-variable)）に、アイコン URL 対応表（`icon-urls.json`）を加える。
+- 同じ名前はアイコン URL 対応表を優先するので、標準のアイコンを差し替えられる。
+- `createGenerateTools([builtinIcons, fromUrls(urls)], colorResolver)` と同じ。
 
 <a id="creategeneratetoolswithurls-signature"></a>
 
@@ -442,8 +364,8 @@ export declare function createGenerateToolsWithUrls(urls: Record<string, string>
 
 | Parameter | Description |
 | - | - |
-| urls | アイコン名から画像 URL への対応表 |
-| colorResolver | |
+| urls | アイコン URL 対応表 |
+| colorResolver | キー名から色を解決する関数 |
 
 <a id="creategeneratetoolswithurls-returns"></a>
 
@@ -455,13 +377,13 @@ export declare function createGenerateToolsWithUrls(urls: Record<string, string>
 
 ### defaultDecorator
 
-Source: [src/web/remoteKeys/utils.ts:120](../../src/web/remoteKeys/utils.ts#L120)
+Source: [src/web/remoteKeys/utils.ts:131](../../src/web/remoteKeys/utils.ts#L131)
 
-キーの既定値を決める、標準の decorator。
+キーの既定値を決める、標準の `decorator`。
 
-- icon: 未指定の場合は、アイコンがあるキーに限り、キー名をそのまま設定する。
-- showLabel: アイコンがあるキーは false にして、アイコンだけで表示する（keepLabel が指定された場合は変更しない）。
-- color: 未指定の場合は、キーの種類ごとの色を設定する。
+- `icon`: 未指定の場合は、アイコンがあるキーに限り、キー名をそのまま設定する。
+- `showLabel`: アイコンがあるキーは `false` にして、アイコンだけで表示する（`keepLabel` が指定された場合は変更しない）。
+- `color`: 未指定の場合は、キーの種類ごとの色を設定する。
 
 <a id="defaultdecorator-signature"></a>
 
@@ -477,8 +399,8 @@ defaultDecorator: (key: RemoteKeyDraft, opts?: DefaultDecoratorOpts) => RemoteKe
 
 | Parameter | Description |
 | - | - |
-| key | |
-| opts | |
+| key | 既定値を適用するリモコンキー |
+| opts | 既定の適用方法を調整するオプション |
 
 <a id="defaultdecorator-returns"></a>
 
@@ -490,9 +412,12 @@ defaultDecorator: (key: RemoteKeyDraft, opts?: DefaultDecoratorOpts) => RemoteKe
 
 ### fromComponents
 
-Source: [src/web/remoteKeys/utils.ts:23](../../src/web/remoteKeys/utils.ts#L23)
+Source: [src/web/remoteKeys/utils.ts:25](../../src/web/remoteKeys/utils.ts#L25)
 
-コンポーネントの対応表から、アイコンセットを生成する。 対象は、style を受け取るコンポーネント（Remixicon など）。値が undefined の項目は除外する。
+コンポーネントの対応表から、アイコンセットを生成する。
+
+- 対象は、`style` を受け取るコンポーネント（Remixicon など）。
+- 値が `undefined` の項目は除外する。
 
 <a id="fromcomponents-signature"></a>
 
@@ -521,9 +446,9 @@ export declare function fromComponents(icons: Partial<Record<string, IconCompone
 
 ### fromUrls
 
-Source: [src/web/remoteKeys/utils.ts:42](../../src/web/remoteKeys/utils.ts#L42)
+Source: [src/web/remoteKeys/utils.ts:44](../../src/web/remoteKeys/utils.ts#L44)
 
-画像 URL の対応表から、アイコンセットを生成する。画像に名前を付けて登録する場合に使用する。
+アイコン URL 対応表から、アイコンセットを生成する。画像に名前を付けて登録する場合に使用する。
 
 <a id="fromurls-signature"></a>
 
@@ -539,7 +464,7 @@ export declare function fromUrls(urls: Record<string, string>): IconSet;
 
 | Parameter | Description |
 | - | - |
-| urls | アイコン名から画像 URL への対応表 |
+| urls | アイコン URL 対応表 |
 
 <a id="fromurls-returns"></a>
 
@@ -551,16 +476,18 @@ export declare function fromUrls(urls: Record<string, string>): IconSet;
 
 ### generate
 
-Source: [src/gen/generate.ts:40](../../src/gen/generate.ts#L40)
+Source: [src/gen/generate.ts:41](../../src/gen/generate.ts#L41)
 
-Builder の build() が返したリモコン設定から、静的リモコンを生成する。 出力先に、index.html、CSS、remote.js、favicon.svg を出力する。
+リモコン設定から、静的リモコン用 HTML を生成する。
+
+- [remoconBuilder(options)](../rz-remocon-api/index.md#remoconbuilder-function) で作成したリモコン設定を利用可能。
 
 <a id="generate-signature"></a>
 
 #### Signature
 
 ```typescript
-export declare function generate(input: GenerateOpts): Promise<void>;
+export declare function generate(opts: GenerateOpts): Promise<void>;
 ```
 
 <a id="generate-parameters"></a>
@@ -569,7 +496,7 @@ export declare function generate(input: GenerateOpts): Promise<void>;
 
 | Parameter | Description |
 | - | - |
-| input | |
+| opts | 生成オプション |
 
 <a id="generate-returns"></a>
 
@@ -581,13 +508,15 @@ export declare function generate(input: GenerateOpts): Promise<void>;
 
 ### loadColorMapFile
 
-Source: [src/gen/load.ts:100](../../src/gen/load.ts#L100)
+Source: [src/gen/load.ts:101](../../src/gen/load.ts#L101)
 
-`color-map.json` を読み込み、キー名・kind から色への対応表を返す。 標準の色に上書きする分だけを書く。mergeColorMap() に渡すと、標準の色に重ねられる。
+`color-map.json` を読み込み、色マップを返す。
 
-- required が false の場合、ファイルが存在しなければ空の対応表を返す。
-- required が true の場合、ファイルが存在しなければ例外を投げる。
-- required の値にかかわらず、ファイルの読み込みまたは JSON の解析に失敗した場合は例外を投げる。
+- 既定の色に上書きする分だけを書く。
+- [mergeColorMap(overrides)](../rz-remocon-api/index.md#mergecolormap-function) に渡すと、既定の色に重ねられる。
+- `required` が `false` の場合、ファイルが存在しなければ空の色マップを返す。
+- `required` が `true` の場合、ファイルが存在しなければエラーを投げる。
+- `required` の値にかかわらず、ファイルの読み込みまたは JSON の解析に失敗した場合はエラーを投げる。
 - 不正な項目がある場合は、警告を出して不正な項目だけを除外し、正常な項目を返す。
 
 <a id="loadcolormapfile-signature"></a>
@@ -604,7 +533,7 @@ export declare function loadColorMapFile(file: string, required: boolean): Recor
 
 | Parameter | Description |
 | - | - |
-| file | color-map.json のパス |
+| file | `color-map.json` のパス。 |
 | required | ファイルの存在を必須とするか |
 
 <a id="loadcolormapfile-returns"></a>
@@ -619,11 +548,11 @@ export declare function loadColorMapFile(file: string, required: boolean): Recor
 
 Source: [src/gen/load.ts:75](../../src/gen/load.ts#L75)
 
-`icon-urls.json` を読み込み、アイコン名と画像 URL の対応表を返す。
+ファイルを読み込み、アイコン URL 対応表を返す。
 
-- required が false の場合、ファイルが存在しなければ空の対応表を返す。
-- required が true の場合、ファイルが存在しなければ例外を投げる。
-- required の値にかかわらず、ファイルの読み込みまたは JSON の解析に失敗した場合は例外を投げる。
+- `required` が `false` の場合、ファイルが存在しなければ空のアイコン URL 対応表を返す。
+- `required` が `true` の場合、ファイルが存在しなければエラーを投げる。
+- `required` の値にかかわらず、ファイルの読み込みまたは JSON の解析に失敗した場合はエラーを投げる。
 - 不正な項目がある場合は、警告を出して不正な項目だけを除外し、正常な項目を返す。
 
 <a id="loadiconurlsfile-signature"></a>
@@ -640,7 +569,7 @@ export declare function loadIconUrlsFile(file: string, required: boolean): IconU
 
 | Parameter | Description |
 | - | - |
-| file | icon-urls.json のパス |
+| file | `icon-urls.json` のパス。 |
 | required | ファイルの存在を必須とするか |
 
 <a id="loadiconurlsfile-returns"></a>
@@ -655,9 +584,9 @@ export declare function loadIconUrlsFile(file: string, required: boolean): IconU
 
 ### builtinIcons
 
-Source: [src/web/remoteKeys/utils.ts:49](../../src/web/remoteKeys/utils.ts#L49)
+Source: [src/web/remoteKeys/utils.ts:51](../../src/web/remoteKeys/utils.ts#L51)
 
-標準のアイコン（REMOTE_ICONS）から生成した、アイコンセット。
+標準のアイコン（`REMOTE_ICONS`）から生成したアイコンセット。
 
 <a id="builtinicons-signature"></a>
 
@@ -673,14 +602,13 @@ builtinIcons: IconSet
 
 ### defaultIconRender
 
-Source: [src/web/remoteKeys/utils.ts:110](../../src/web/remoteKeys/utils.ts#L110)
+Source: [src/web/remoteKeys/utils.ts:118](../../src/web/remoteKeys/utils.ts#L118)
 
 アイコンを描画する標準の関数。
 
-- key.icon には、アイコン名または画像 URL の文字列が入る。
-- icon がない場合: 何も描画しない（icon の省略は「アイコンなし」を意味する。エディタも同じ）。
-- 標準の対応表にある名前の場合: 標準のアイコンを描画する。
-- 対応表にない文字列の場合: 画像 URL として `<img>` で描画する。
+- `icon` がない場合: 何も描画しない（`icon` の省略は「アイコンなし」を意味する。エディタも同じ）。
+- 標準のアイコンセット（[builtinIcons](../rz-remocon-gen/index.md#builtinicons-variable)）にある名前の場合: 標準のアイコンを描画する。
+- アイコンセットにない文字列の場合: 画像 URL として `<img>` で描画する。
 
 <a id="defaulticonrender-signature"></a>
 

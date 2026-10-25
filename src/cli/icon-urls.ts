@@ -1,17 +1,17 @@
 /*
- * icon-urls コマンド。アプリ名とドメインの対応表から、次の2つのファイルを書き出す。
- * - icon-urls.json: アプリ名 → Google の favicon の URL の対応表
- * - icon-urls.html: アイコンの見た目を確認するためのプレビュー
+ * `icon-urls` コマンド。アプリ名とドメインの対応表から、次の2つのファイルを書き出す。
+ * - `icon-urls.json`: アイコン URL 対応表（アプリ名 → Google の favicon の URL）
+ * - `icon-urls.html`: アイコンの見た目を確認するためのプレビュー
  * 画像は取得せず、URL を生成するだけである。
  */
 import fs from "node:fs";
 import path from "node:path";
 
-/** icon-urls コマンドのオプション。 */
+/** `icon-urls` コマンドのオプション。 */
 export type IconUrlsCommandOpts = {
-  /** 出力先のディレクトリ。icon-urls.json と icon-urls.html を出力する。 */
+  /** 出力先のディレクトリ。`icon-urls.json` と `icon-urls.html` を出力する。 */
   outputDir: string;
-  /** 名前とドメインの対応表（JSON）のパス。省略した場合は、outputDir の app-domains.json を使用する。 */
+  /** 名前とドメインの対応表（JSON）のパス。省略した場合は、`outputDir` の `app-domains.json` を使用する。 */
   domains?: string;
   /** favicon の大きさ（px）。 */
   size: string;
@@ -56,9 +56,9 @@ function escapeHtml(text: string): string {
 }
 
 /**
- * 名前と URL の対応表から、確認用の HTML（アイコンと名前の一覧）を生成する。
+ * アイコン URL 対応表から、確認用の HTML（アイコンと名前の一覧）を生成する。
  *
- * @param urls - 名前から画像 URL への対応表。
+ * @param urls - アイコン URL 対応表。
  */
 export function buildPreviewHtml(urls: Record<string, string>): string {
   const rows = Object.entries(urls).map(
@@ -87,7 +87,7 @@ ${rows.join("\n")}
 
 /**
  * 名前とドメインの対応表を読み込む。
- * ファイルが存在しない場合は、標準の対応表（DEFAULT_APP_DOMAINS）を返す。
+ * ファイルが存在しない場合は、標準の対応表（`DEFAULT_APP_DOMAINS`）を返す。
  *
  * @param file - 対応表（JSON）のパス。
  * @throws 内容が、文字列の値を持つ JSON オブジェクトでない場合。
@@ -109,10 +109,10 @@ export function loadDomains(file: string): Record<string, string> {
 }
 
 /**
- * icon-urls コマンドを実行し、icon-urls.json と icon-urls.html を書き出す。
+ * `icon-urls` コマンドを実行し、`icon-urls.json` と `icon-urls.html` を書き出す。
  *
  * @param options - コマンドのオプション。
- * @throws size が正の整数でない場合。
+ * @throws `size` が正の整数でない場合。
  */
 export function commandIconUrls(options: IconUrlsCommandOpts): void {
   if (!/^[1-9]\d*$/.test(options.size)) {

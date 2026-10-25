@@ -1,12 +1,20 @@
-[README](../../README.md) / [rz-remocon/api](../../rz-remocon-api/index.md) / RemoconBuilder
+[README](../../README.md) / [rz-remocon/api](../rz-remocon-api/index.md) / RemoconBuilder
 
 # RemoconBuilder
 
-Source: [src/api/builder.ts:123](../../src/api/builder.ts#L123)
+Source: [src/api/builder.ts:150](../../src/api/builder.ts#L150)
 
 リモコン設定を組み立てる Builder。
 
-キーを順番に追加し、グリッドへの自動配置や値の補完を行う。 build() は表示用、buildEditor() は編集用の設定を生成する。
+- キーを順番に追加し、グリッドへの自動配置や値の補完を行う。
+- 座標とサイズは、すべてセル単位で指定する。
+- 1 セルは、文字 1 つ分の大きさを想定する。
+- `unit` は 1 キー分のセル数で、既定値は 4。
+- 1 キーに 4 文字ほど書ける大きさになる。
+- キーの半分（2 セル）や 1/4（1 セル）の単位で指定可能となり、柔軟にレイアウトできる。
+- 1 キーの標準サイズは `unit` × `unit` セル。
+- `columns` はグリッドの幅（セル数）。`unit` の倍数にすると、キーが隙間なく並ぶ。
+- `build()` は表示用、`buildEditor()` は編集用の設定を生成する。
 
 <a id="remoconbuilder-signature"></a>
 
@@ -16,48 +24,24 @@ Source: [src/api/builder.ts:123](../../src/api/builder.ts#L123)
 export declare class RemoconBuilder
 ```
 
-## Constructors
+<a id="remoconbuilder-remarks"></a>
 
-| Constructor | Description |
-| - | - |
-| [(constructor)(options)](../rz-remocon-api/remoconbuilder-class.md#_constructor_-constructor) | Constructs a new instance of the `RemoconBuilder` class |
+## Remarks
+
+[remoconBuilder(options)](../rz-remocon-api/index.md#remoconbuilder-function) で生成すること。
 
 ## Methods
 
 | Method | Description |
 | - | - |
 | [add(remoteKey, overrides)](../rz-remocon-api/remoconbuilder-class.md#add-method) | 操作キーを追加する |
-| [addCustom(name, code, overrides)](../rz-remocon-api/remoconbuilder-class.md#addcustom-method) | カタログにないキーを追加する |
+| [addCustom(name, code, overrides)](../rz-remocon-api/remoconbuilder-class.md#addcustom-method) | カスタム操作キーを追加する |
 | [build()](../rz-remocon-api/remoconbuilder-class.md#build-method) | 表示用の設定を生成する |
 | [buildEditor()](../rz-remocon-api/remoconbuilder-class.md#buildeditor-method) | 編集用の設定を生成する |
 | [label(text, overrides)](../rz-remocon-api/remoconbuilder-class.md#label-method) | 表示用ラベルを追加する |
 | [newline(h)](../rz-remocon-api/remoconbuilder-class.md#newline-method) | 次の行の先頭へ移動する |
-| [spacer(w)](../rz-remocon-api/remoconbuilder-class.md#spacer-method) | キーを配置せず、カーソルを右へ移動する |
+| [spacer(w)](../rz-remocon-api/remoconbuilder-class.md#spacer-method) | カーソルを右へ移動する |
 | [tab(label, color)](../rz-remocon-api/remoconbuilder-class.md#tab-method) | タブを追加する |
-
-## Constructor Details
-
-<a id="_constructor_-constructor"></a>
-
-### (constructor)
-
-Constructs a new instance of the `RemoconBuilder` class
-
-<a id="_constructor_-signature"></a>
-
-#### Signature
-
-```typescript
-constructor(options: RemoconBuilderOptions);
-```
-
-<a id="_constructor_-parameters"></a>
-
-#### Parameters
-
-| Parameter | Description |
-| - | - |
-| options | |
 
 ## Method Details
 
@@ -67,10 +51,7 @@ constructor(options: RemoconBuilderOptions);
 
 操作キーを追加する。
 
-\= decorator 適用後に overrides を適用する。
-
-- 未設定の color は背景色で補完する。
-- x / y は自動配置するため、overrides では指定できない。
+- `remoteKey` は [RemoteKeys](../rz-remocon-api/index.md#remotekeys-variable) の値（例：`RemoteKeys.powerOn`）を指定可能。
 - 特殊キーは追加できない。
 
 <a id="add-signature"></a>
@@ -100,9 +81,8 @@ add(remoteKey: RemoteKey, ...overrides: RemoteKeyOverrides[]): this;
 
 ### addCustom
 
-カタログにないキーを追加する。
+カスタム操作キーを追加する。
 
-- 既定では name をラベルに設定するが、ラベルは表示しない。
 - 特殊キー名（`$` で始まる名前）は指定できない。
 
 <a id="addcustom-signature"></a>
@@ -135,8 +115,6 @@ addCustom(name: string, code: string, ...overrides: RemoteKeyOverrides[]): this;
 
 表示用の設定を生成する。
 
-- showLabel が false のキーは label を undefined にする。
-
 <a id="build-signature"></a>
 
 #### Signature
@@ -156,9 +134,6 @@ build(): RemoconConfig;
 ### buildEditor
 
 編集用の設定を生成する。
-
-- ラベル文字列を保持し、追加順に id を割り当てる。
-- 特殊キーの code は undefined にする。
 
 <a id="buildeditor-signature"></a>
 
@@ -209,8 +184,6 @@ label(text: string, ...overrides: RemoteKeyOverrides[]): this;
 
 次の行の先頭へ移動する。
 
-- 移動量は h、現在の行の最大高さ、unit の順に決定する。
-
 <a id="newline-signature"></a>
 
 #### Signature
@@ -225,7 +198,7 @@ newline(h?: number): this;
 
 | Parameter | Description |
 | - | - |
-| h | Y 方向の移動量 |
+| h | Y 方向の移動量（セル単位） |
 
 <a id="newline-returns"></a>
 
@@ -237,7 +210,7 @@ newline(h?: number): this;
 
 ### spacer
 
-キーを配置せず、カーソルを右へ移動する。
+カーソルを右へ移動する。
 
 <a id="spacer-signature"></a>
 
@@ -267,7 +240,7 @@ spacer(w?: number): this;
 
 タブを追加する。
 
-- 最初のタブはキーを追加する前に呼び出す必要がある。
+- 他のキーを追加する前（最初）に呼び出す必要がある。
 - 配置後は改行する。
 
 <a id="tab-signature"></a>

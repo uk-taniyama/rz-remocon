@@ -4,7 +4,7 @@ import { defaultIconRender, type RemoteKeyIconRender } from "../remoteKeys";
 import { RemoteKeyLayout } from "../remoteKeys/RemoteKeyLayout";
 import type { EditorKey } from "./editor-grid";
 
-/** PreviewView の props。 */
+/** `PreviewView` の props。 */
 export interface PreviewViewProps {
   keys: EditorKey[];
   background: string;
@@ -15,11 +15,11 @@ export interface PreviewViewProps {
 
 /**
  * エディタの隣に表示するプレビュー。
- * - 編集中のキーを、ビューア（MainView）と同じ見た目で描画する。
+ * - 編集中のキーを、ビューア（`MainView`）と同じ見た目で描画する。
  * - タブの切り替えは操作できる。
- * - キー送信の仕組み（RemoteKeySender）を持たないため、キーを押しても TV には送信されない。
+ * - キー送信の仕組み（`RemoteKeySender`）を持たないため、キーを押しても TV には送信されない。
  *
- * 枠の幅は、.remote-key-container（common.css ではなく remote-keys.css に定義）が
+ * 枠の幅は、`.remote-key-container`（`common.css` ではなく `remote-keys.css` に定義）が
  * 100cqw で受けるため、枠の大きさに合わせて縮小される。
  */
 export function PreviewView({

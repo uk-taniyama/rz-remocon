@@ -1,5 +1,5 @@
 import { mkdirSync, writeFileSync } from "node:fs";
-import { RemoteKeys, remoteKeysBuilder } from "rz-remocon/api";
+import { RemoteKeys, remoconBuilder } from "rz-remocon/api";
 import {
   createGenerateToolsWithUrls,
   generate,
@@ -23,7 +23,7 @@ const outputDir = "output/icon-urls";
 const urls = loadIconUrlsFile("icon-urls.json", true);
 const { decorator, iconRender } = createGenerateToolsWithUrls(urls);
 
-const remocon = remoteKeysBuilder({
+const remocon = remoconBuilder({
   columns: 20,
   background: "#0f172a",
   decorator,

@@ -1,5 +1,9 @@
 import { join } from "node:path";
+import { TSDocParser } from "@microsoft/tsdoc";
+import { createDocCommentRecord } from "./tsdoc";
 import { itemKey, loadJson, saveJson } from "./utils";
+
+const parser = new TSDocParser();
 
 interface ApiParameter {
   parameterName: string;
@@ -13,6 +17,7 @@ interface ApiDocItem {
   kind: string;
   name?: string;
   text?: string;
+  docComment?: string;
   canonicalReference?: string;
   members?: ApiDocItem[];
   excerptTokens?: ApiDocItem[];
@@ -115,14 +120,14 @@ function splitExcerptToken(token: ApiDocItem, dict: Dict) {
       console.error(`${key}が解決できない......`);
       continue;
     }
-    // import("pkg"). の部分は捨てて、Reference だけを残す
+    // `import("pkg").` の部分は捨てて、`Reference` だけを残す
     if (last < m.index) {
       out.push({ kind: "Content", text: text.slice(last, m.index) });
     }
     out.push({
       kind: "Reference",
       // 画面で出どころが分かるよう、パッケージ名つきで表示する（例: rz-remocon-api.RemoteKeyDraft）
-      // ※ patchMarkdown で rz-remocon-api → rz-remocon/api に変わる
+      // ※ `patchMarkdown` で rz-remocon-api → rz-remocon/api に変わる
       text: `${pkg}.${name}`,
       canonicalReference: ref,
     });
@@ -150,9 +155,9 @@ function isRange(v: unknown): v is TokenRange {
 }
 
 /**
- * item 内の *TokenRange / *TokenRanges（returnTypeTokenRange、
- * parameters[].parameterTypeTokenRange など）の添字を、分割後の添字に付け替える。
- * map は 旧index -> 新index（末尾の endIndex 分も含む）。
+ * `item` 内の `*TokenRange` / `*TokenRanges`（`returnTypeTokenRange`、
+ * `parameters[].parameterTypeTokenRange` など）の添字を、分割後の添字に付け替える。
+ * `map` は「旧 index → 新 index」（末尾の `endIndex` 分も含む）。
  */
 function remapRanges(obj: unknown, map: number[]) {
   if (Array.isArray(obj)) {
@@ -173,7 +178,7 @@ function remapRanges(obj: unknown, map: number[]) {
         }
       }
     } else if (typeof value === "object") {
-      remapRanges(value, map); // parameters, typeParameters など
+      remapRanges(value, map); // `parameters`, `typeParameters` など
     }
   }
 }
@@ -191,23 +196,23 @@ function stripImportPrefix(tokens: ApiDocItem[]) {
 }
 
 /**
- * excerptTokens の Content に含まれる `import("rz-remocon-xxx").Name` を解決する。
+ * `excerptTokens` の Content に含まれる `import("rz-remocon-xxx").Name` を解決する。
  *
- * - 参照先は dict（"パッケージ名/名前" → canonicalReference）で引く。
- * - トークン数が増えるので、*TokenRange の添字も付け替える。
+ * - 参照先は `dict`（"パッケージ名/名前" → `canonicalReference`）で引く。
+ * - トークン数が増えるので、`*TokenRange` の添字も付け替える。
  * @deprecated もう影響するコードがなくなった模様.....
  */
 export function resolveExcerptTokens(item: ApiDocItem, dict: Dict) {
   traverse(item, (item) => {
     if (!item.excerptTokens) return;
     stripImportPrefix(item.excerptTokens);
-    const map: number[] = []; // 旧index -> 新index
+    const map: number[] = []; // 旧 index → 新 index
     const out: ApiDocItem[] = [];
     for (const token of item.excerptTokens) {
       map.push(out.length);
       out.push(...splitExcerptToken(token, dict));
     }
-    map.push(out.length); // endIndex は排他的
+    map.push(out.length); // `endIndex` は排他的
     item.excerptTokens = out;
     remapRanges(item, map);
   });
@@ -235,7 +240,8 @@ export function resolveUnknownReference(item: ApiDocItem, dict: Dict) {
 function cleanupParameter(item: ApiDocItem) {
   if (!item.parameters) return;
 
-  item.parameters = item.parameters.filter(
+  // 分割代入のパラメーターを除去する。
+  const parameters = item.parameters.filter(
     (p) =>
       !(
         (p.parameterName.startsWith("{") || p.parameterName.startsWith("[")) &&
@@ -243,19 +249,68 @@ function cleanupParameter(item: ApiDocItem) {
         p.parameterTypeTokenRange.endIndex === 0
       ),
   );
+
+  if (parameters.length === item.parameters.length) {
+    return;
+  }
+  item.parameters = parameters;
+  if (!item.docComment) {
+    return;
+  }
+  const tsdoc = parser.parseString(item.docComment);
+  const params: string[] = [];
+  for (const param of tsdoc.docComment.params) {
+    params.push(param.parameterName);
+  }
+  if (params.length !== item.parameters.length) {
+    return;
+  }
+  console.warn(
+    `分割代入が使用されているため、パラメター名が解決できない: ${item.name}`,
+  );
 }
 
-export function cleanupParameters(item: ApiDocItem) {
+function removeInternalConstructorNotes(item: ApiDocItem) {
+  if (item.kind !== "Class" || !item.docComment) {
+    return;
+  }
+
+  // デフォルトで付与されるinternalの文章を取り除く。
+  const srcLines = item.docComment.split("\n");
+  const dstLines = srcLines.filter(
+    (line) =>
+      !line.includes("The constructor for this class is marked as internal."),
+  );
+  if (dstLines.length === srcLines.length) {
+    return;
+  }
+
+  // 確定して、@remaksが残っていればOK。
+  item.docComment = dstLines.join("\n");
+  const comment = createDocCommentRecord(item.docComment);
+  if (comment.remarks) {
+    return;
+  }
+
+  // 警告をして、強引に切り詰める。
+  console.warn(`コンストラクタが internal だけど説明がない: ${item.name}`);
+  item.docComment = dstLines
+    .filter((line) => !line.includes("@remarks"))
+    .join("\n");
+}
+
+export function cleanupApiDoc(item: ApiDocItem) {
   traverse(item, (item) => {
     cleanupParameter(item);
+    removeInternalConstructorNotes(item);
   });
 }
 
 /**
- * API Extractor が生成した .api.json を読み込み変換する。
+ * API Extractor が生成した `.api.json` を読み込み変換する。
  *
- * @param inputDirectoryPath - 変換元の.api.json があるディレクトリ（例: work/doc）
- * @param outputDirectoryPath - 変換後の .api.json の出力先ディレクトリ（例: work/doc3）
+ * @param inputDirectoryPath - 変換元の.api.json があるディレクトリ（例: `work/doc`）
+ * @param outputDirectoryPath - 変換後の `.api.json` の出力先ディレクトリ（例: `work/doc3`）
  */
 export function convertApiJson(
   inputDirectoryPath: string,
@@ -277,12 +332,12 @@ export function convertApiJson(
 
   // resolveExcerptTokens(gen, dict);
   resolveUnknownReference(gen, dict);
-  cleanupParameters(index);
-  cleanupParameters(api);
-  cleanupParameters(gen);
+  cleanupApiDoc(index);
+  cleanupApiDoc(api);
+  cleanupApiDoc(gen);
 
   saveJson(join(outputDirectoryPath, "dict.json"), dict);
-  saveJson(join(outputDirectoryPath, "index.api.json"), index);
-  saveJson(join(outputDirectoryPath, "api.api.json"), api);
-  saveJson(join(outputDirectoryPath, "gen.api.json"), gen);
+  saveJson(join(outputDirectoryPath, "rz-remocon.api.json"), index);
+  saveJson(join(outputDirectoryPath, "rz-remocon-api.api.json"), api);
+  saveJson(join(outputDirectoryPath, "rz-remocon-gen.api.json"), gen);
 }

@@ -23,7 +23,7 @@ import {
 import { commandIconUrls, type IconUrlsCommandOpts } from "./icon-urls";
 import { setupServer } from "./server";
 
-/** setup コマンド。REGZA に接続を要求し、REGZA に PIN を表示させる。 */
+/** `setup` コマンド。REGZA に接続を要求し、REGZA に PIN を表示させる。 */
 export async function commandSetup(host: string): Promise<void> {
   const userId = randomUserId();
 
@@ -37,7 +37,7 @@ export async function commandSetup(host: string): Promise<void> {
   console.log("confirm <pin>で設定してください。");
 }
 
-/** confirm コマンド。REGZA に表示された PIN を使用して、接続を確定する。 */
+/** `confirm` コマンド。REGZA に表示された PIN を使用して、接続を確定する。 */
 async function commandConfirm(pin: string): Promise<void> {
   if (!/^\d{4}$/.test(pin)) {
     throw new Error("PINは4桁の数字です。");
@@ -49,7 +49,7 @@ async function commandConfirm(pin: string): Promise<void> {
   console.log("接続が完了しました。");
 }
 
-/** support コマンド。REGZA がサポートするコマンドの一覧を、support.jsonl に保存する。 */
+/** `support` コマンド。REGZA がサポートするコマンドの一覧を、`support.jsonl` に保存する。 */
 async function commandSupport(): Promise<void> {
   const supportResponse = await getSupport();
   const jsonl = supportResponse.command
@@ -59,7 +59,7 @@ async function commandSupport(): Promise<void> {
   fs.writeFileSync("support.jsonl", `${jsonl}\n`, { mode: 0o600 });
 }
 
-/** key コマンド。指定したキーコードを REGZA に送信する。 */
+/** `key` コマンド。指定したキーコードを REGZA に送信する。 */
 async function commandKey(value: string): Promise<void> {
   const code = keyCodeSchema.parse(value);
   await freezeRegzaConfig();
@@ -68,7 +68,7 @@ async function commandKey(value: string): Promise<void> {
   console.log(response);
 }
 
-/** status コマンド。REGZA の公開サポート API のレスポンスを表示する。 */
+/** `status` コマンド。REGZA の公開サポート API のレスポンスを表示する。 */
 async function commandStatus(): Promise<void> {
   const support = await getPublicSupport();
   console.log(support);

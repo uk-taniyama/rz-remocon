@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
 import { type ApiResult, type Client, safeApiCall } from "../../api";
-import type { OnChangeCode } from "./types";
+import type { OnChangeCode } from "./internal";
 
 /** キーコードの送信結果。 */
 export interface SendCodeResult {
@@ -25,7 +25,7 @@ export async function sendCode(
 
 /**
  * キーコードを送信するフック。
- * 送信中は、次の送信を受け付けない（多重送信の防止）。送信中かどうかは busy で参照できる。
+ * 送信中は、次の送信を受け付けない（多重送信の防止）。送信中かどうかは `busy` で参照できる。
  *
  * @param client - 送信に使う API クライアント。
  */

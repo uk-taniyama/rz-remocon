@@ -22,9 +22,9 @@ const __dirname = path.dirname(__filename);
 
 /**
  * -d オプションの既定値（静的ファイルのディレクトリ）を決定する。
- * - ビルド後（dist/cli.js）: 同じ階層の dist/public。
- * - 開発時（src/cli/server.ts）: リポジトリの public。
- * ビルド後に ../../public を指すとパッケージの外になるため、先に同じ階層の public を探す。
+ * - ビルド後（`dist/cli.js`）: 同じ階層の `dist/public`。
+ * - 開発時（`src/cli/server.ts`）: リポジトリの `public`。
+ * ビルド後に `../../public` を指すとパッケージの外になるため、先に同じ階層の `public` を探す。
  *
  * @param baseDir - 探索の基準とするディレクトリ。
  */
@@ -126,7 +126,7 @@ export const guardOrigin = (allowOrigin: string) =>
 
 type OpenApiSpec = Awaited<ReturnType<typeof createOpenApiSpec>>;
 
-/** server コマンドのオプション。 */
+/** `server` コマンドのオプション。 */
 export interface ServerOptions {
   publicDir: string;
   dataDir: string;
@@ -141,7 +141,7 @@ export interface ServerOptions {
  * @param publicDir - 静的ファイルのディレクトリ。
  * @param spec - OpenAPI の仕様。指定した場合は、/openapi.json と /docs を提供する。
  * @param corsOrigin - API に許可する CORS のオリジン。省略した場合は CORS を設定しない。
- * @param dataDir - /data 以下で配信するディレクトリ。省略可。
+ * @param dataDir - `/data` 以下で配信するディレクトリ。省略可。
  */
 export function createServerApp(
   { publicDir, spec, corsOrigin, allowOrigin, dataDir }: ServerOptions,
@@ -153,7 +153,7 @@ export function createServerApp(
 ) {
   const app = new Hono();
 
-  // data/ は /data 以下で配信する。public/data/ と衝突しないよう、public より先に登録する。
+  // `data/` は `/data` 以下で配信する。`public/data/` と衝突しないよう、`public` より先に登録する。
   if (dataDir != null) {
     app.use(
       "/data/*",
@@ -193,13 +193,13 @@ export function createServerApp(
   return app;
 }
 
-/** server コマンドのオプション。 */
+/** `server` コマンドのオプション。 */
 export interface CommandServerOptions extends Omit<ServerOptions, "spec"> {
   port: number;
 }
 
 /**
- * server コマンドを実行し、Web サーバーを起動する。
+ * `server` コマンドを実行し、Web サーバーを起動する。
  * REGZA の設定は、起動時に検証して読み取り専用にする。
  */
 export async function commandServer({
@@ -215,7 +215,7 @@ export async function commandServer({
   const resolvedDataDir = path.resolve(dataDir);
 
   // 初回の起動時は存在しないため作成する。
-  // エディタの保存先と、/data の配信元を兼ねる。
+  // エディタの保存先と、`/data` の配信元を兼ねる。
   await mkdir(resolvedDataDir, { recursive: true });
   configureEditorStorage({ dataDir: resolvedDataDir });
 
@@ -266,7 +266,7 @@ export function parsePort(value: string): number {
   return port;
 }
 
-/** commander のプログラムに、server コマンドを登録する。 */
+/** commander のプログラムに、`server` コマンドを登録する。 */
 export function setupServer(program: Command) {
   program
     .command("server")

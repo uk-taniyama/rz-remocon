@@ -26,16 +26,7 @@ npm run check        # Biome によるチェックと自動整形
 npm run lint         # check + tsc をまとめて実行
 ```
 
-### 代表的な CLI 例
-
-```bash
-npx rz-remocon setup 192.168.0.10
-npx rz-remocon confirm 1234
-npx rz-remocon support
-npx rz-remocon key 40BF7F
-npx rz-remocon sample-icon-urls-from-google-favicons -o data
-npx rz-remocon server -p 8484 -d ./dist/public
-```
+CLI の使い方は [README.md](README.md) の「CLI」「Web サーバー」を参照する。
 
 ## 依存関係の特徴
 
@@ -51,19 +42,8 @@ npx rz-remocon server -p 8484 -d ./dist/public
 
 ## プロジェクト構成
 
-```text
-src/
-  api/         # Web API の契約と定義
-  cli/         # CLI とサーバー実装
-  gen/         # 生成系コード / HTML View / 標準のリモコン（default-remocon.ts）
-  lib/         # 共通ロジック、設定、ユーティリティ
-  web/         # React フロントエンド
-examples/      # 利用例
-public/        # 静的 Web 配信用ファイル
-docs/          # 方針と実装状況（todo.md）
-scripts/       # ビルド用スクリプト
-work/          # api-extractor の中間生成物（build.sh が毎回消す。コミットしない）
-```
+ディレクトリの構成は [README.md](README.md) の「プロジェクト構成」を参照する（ここには重複して書かない）。
+ビルドの流れは [docs/build.md](docs/build.md)、方針と実装状況は [docs/todo.md](docs/todo.md)。
 
 ## 変更時の注意
 

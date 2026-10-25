@@ -1,14 +1,14 @@
 /*
- * 標準のリモコン設定（remocon.json）を、Builder で組み立てる。
+ * 標準のリモコン設定（`remocon.json`）を、Builder で組み立てる。
  *
- * data/remocon.json（エディタで保存したもの）が存在しない場合に、サーバーが代わりに返す。
- * サーバーは /data/* を data/ から先に探し、見つからなければ public の中から探す。
- * そのため、ビルド時に dist/public/data/remocon.json として出力しておけば、
+ * `data/remocon.json`（エディタで保存したもの）が存在しない場合に、サーバーが代わりに返す。
+ * サーバーは `/data/*` を `data/` から先に探し、見つからなければ `public` の中から探す。
+ * そのため、ビルド時に `dist/public/data/remocon.json` として出力しておけば、
  * 保存するまでは標準のリモコンが表示される。
  *
- * 使い方（build.sh から呼び出される）:
+ * 使い方（`build.sh` から呼び出される）:
  *   npx tsx --tsconfig tsconfig.gen.json src/gen/default-remocon.ts [出力先]
- *   既定: dist/public/data → <出力先>/remocon.json
+ *   既定: `dist/public/data` → <出力先>/remocon.json
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
@@ -17,7 +17,7 @@ import {
   createColorResolver,
   mergeColorMap,
   RemoteKeys,
-  remoteKeysBuilder,
+  remoconBuilder,
 } from "../api";
 import {
   createGenerateToolsWithUrls,
@@ -39,14 +39,14 @@ const tools = createGenerateToolsWithUrls(
  *
  * タブ: 基本 / 放送 / 番組 / 再生
  * 配置: 1行5キーを基本に、意味のまとまりごとに行を分ける。
- * 十字キーと数字キーは、行の途中に空き（spacer）を入れて、形になるように配置する。
+ * 十字キーと数字キーは、行の途中に空き（`spacer`）を入れて、形になるように配置する。
  */
-const builder = remoteKeysBuilder({
+const builder = remoconBuilder({
   columns: 20,
   background: BACKGROUND,
   decorator: tools.decorator,
 })
-  // 基本: 電源、入力切替、音量、チャンネル、十字キーとページ送り（PgUp / PgDown など）、戻る・ホーム・設定
+  // 基本: 電源、入力切換、音量、チャンネル、十字キーとページ送り（PgUp / PgDown など）、戻る・ホーム・設定
   .tab("基本")
   .add(RemoteKeys.powerOn, { showLabel: true })
   .add(RemoteKeys.powerOff, { showLabel: true })
@@ -80,7 +80,7 @@ const builder = remoteKeysBuilder({
   .add(RemoteKeys.etcSetting, { showLabel: true })
   .add(RemoteKeys.etcSubMenu, { showLabel: true })
 
-  // 放送: 放送の切替、HDMI 入力、数字キー（3列）
+  // 放送: 放送の切換、HDMI 入力、数字キー（3列）
   .tab("放送")
   .add(RemoteKeys.chDTT)
   .add(RemoteKeys.chBS)
@@ -198,7 +198,7 @@ export function writeDefaultRemoconJson(outDir: string): string {
   return file;
 }
 
-// 直接実行した場合にのみ書き出す（テストから import した場合は書き出さない）。
+// 直接実行した場合にのみ書き出す（テストから `import` した場合は書き出さない）。
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const [outArg = "dist/public/data"] = process.argv.slice(2);
   console.log(`generate ${writeDefaultRemoconJson(outArg)}`);

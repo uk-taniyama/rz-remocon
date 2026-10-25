@@ -20,10 +20,10 @@ export const DEFAULT_COLOR_PRESETS = [
   "#06b6d4",
 ];
 
-/** 最近使った色を localStorage に保存するキー。 */
+/** 最近使った色を `localStorage` に保存するキー。 */
 const COLOR_HISTORY_KEY = "editor-color-history";
 
-/** 最近使った色を、localStorage から読み込む。読み込めない場合は、空の履歴を返す。 */
+/** 最近使った色を、`localStorage` から読み込む。読み込めない場合は、空の履歴を返す。 */
 function loadColorHistory(): string[] {
   try {
     const saved = window.localStorage.getItem(COLOR_HISTORY_KEY);
@@ -33,7 +33,7 @@ function loadColorHistory(): string[] {
   }
 }
 
-/** 最近使った色を、localStorage に保存する。 */
+/** 最近使った色を、`localStorage` に保存する。 */
 function saveColorHistory(colors: string[]) {
   try {
     window.localStorage.setItem(COLOR_HISTORY_KEY, JSON.stringify(colors));
@@ -53,7 +53,7 @@ export function normalizeHexColor(color: string): string {
   return `#${r}${r}${g}${g}${b}${b}`;
 }
 
-/** SwatchList の props。 */
+/** `SwatchList` の props。 */
 type SwatchListProps = {
   title: string;
   colors: string[];
@@ -61,7 +61,7 @@ type SwatchListProps = {
   onSelect: (color: string) => void;
 };
 
-/** 色の見本を一覧表示し、クリックで色を選択できるようにする。colors が空の場合は何も表示しない。 */
+/** 色の見本を一覧表示し、クリックで色を選択できるようにする。`colors` が空の場合は何も表示しない。 */
 function SwatchList({
   title,
   colors,
@@ -95,7 +95,7 @@ function SwatchList({
   );
 }
 
-/** ColorPicker の props。 */
+/** `ColorPicker` の props。 */
 export type ColorPickerProps = {
   color: string;
   onChange: (color: string) => void;
@@ -141,10 +141,10 @@ export function ColorPicker({
 }
 
 /**
- * 最近使った色の履歴を管理するフック。履歴は localStorage に保存する。
+ * 最近使った色の履歴を管理するフック。履歴は `localStorage` に保存する。
  *
  * @param limit - 保持する履歴の最大件数。
- * @returns 履歴（新しい順）と、色を履歴に追加する push 関数。
+ * @returns 履歴（新しい順）と、色を履歴に追加する `push` 関数。
  */
 export function useColorHistory(limit = 8) {
   const [history, setHistory] = useState<string[]>(loadColorHistory);
@@ -165,11 +165,11 @@ export function useColorHistory(limit = 8) {
   return { history, push };
 }
 
-/** ColorPickerDialog の props。 */
+/** `ColorPickerDialog` の props。 */
 export type ColorPickerDialogProps = {
   initialColor: string;
   presets?: string[];
-  /** ダイアログが閉じたときに呼び出される。決定した場合は確定した色、キャンセルした場合は undefined が渡される。 */
+  /** ダイアログが閉じたときに呼び出される。決定した場合は確定した色、キャンセルした場合は `undefined` が渡される。 */
   onClose: (confirmedColor?: string) => void;
 };
 
@@ -195,7 +195,7 @@ export function ColorPickerDialog({
       ref={dialogRef}
       className="color-picker-dialog"
       onClose={(event) => {
-        // Esc キーで閉じた場合や、引数なしで close() を呼んだ場合は、returnValue が "" のままになる。
+        // Esc キーで閉じた場合や、引数なしで `close()` を呼んだ場合は、`returnValue` が "" のままになる。
         if (event.currentTarget.returnValue === "") {
           onClose(undefined);
           return;
@@ -242,10 +242,10 @@ export function ColorPickerDialog({
   );
 }
 
-/** ColorPickerButton の props。履歴はボタン側で管理するため、history は指定できない。 */
+/** `ColorPickerButton` の props。履歴はボタン側で管理するため、`history` は指定できない。 */
 export type ColorPickerButtonProps = Omit<ColorPickerProps, "history">;
 
-/** 現在の色を表示するボタン。クリックすると ColorPickerDialog が開き、決定した色で onChange を呼び出す。 */
+/** 現在の色を表示するボタン。クリックすると `ColorPickerDialog` が開き、決定した色で `onChange` を呼び出す。 */
 export function ColorPickerButton({
   color,
   presets,

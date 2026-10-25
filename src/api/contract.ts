@@ -22,7 +22,8 @@ export const errors = {
 
 /**
  * 編集用データ API のエラー定義。
- * 共通の INTERNAL_SERVER_ERROR は REGZA との通信失敗を想定したメッセージのため、別に定義している。
+ *
+ * - 共通の `INTERNAL_SERVER_ERROR` は REGZA との通信失敗を想定したメッセージのため、別に定義している。
  */
 export const remoconConfigErrors = {
   STORAGE_ERROR: {
@@ -42,7 +43,7 @@ const oc = base.errors(errors);
 export const sendCode = oc
   .route({
     method: "POST",
-    summary: "リモコンキー送信",
+    summary: "キーコード送信",
     description: "キーコードを受け取り、REGZA API のステータスコードを返す",
     tags: ["REGZA"],
     successDescription: "REGZA API が返したステータスコード",
@@ -100,7 +101,7 @@ export const saveEditorData = oc
 export const apiPrefix = "/api";
 
 /**
- * API の契約（エンドポイント定義の集合）。
+ * API の契約。
  */
 export const contract = {
   sendCode,
@@ -112,6 +113,6 @@ export const contract = {
 };
 
 /**
- * API の契約の型。
+ * API の契約 {@link contract} の型。
  */
 export type Contract = typeof contract;

@@ -20,7 +20,7 @@ export function relativeLuminance(background: string): number {
 
 /**
  * 背景色の上に表示する文字色（白または黒）を返す。
- * 閾値を省略した場合は、TEXT_COLOR_LUMINANCE_THRESHOLD を使用する（呼び出し側が値を持つ必要はない）。
+ * 閾値を省略した場合は、`TEXT_COLOR_LUMINANCE_THRESHOLD` を使用する（呼び出し側が値を持つ必要はない）。
  *
  * @param background - 背景色（#RRGGBB）。
  * @param threshold - 文字色を切り替える境界の相対輝度。

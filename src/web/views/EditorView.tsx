@@ -26,7 +26,6 @@ import {
   DEFAULT_BACKGROUND,
   keyCodeSchema,
   REMOTE_KEY_KIND_DEFS,
-  type RemoteKeyKind,
   TAB_KEY_NAME,
 } from "../../api";
 import { apiClient } from "../client";
@@ -72,7 +71,7 @@ function normalizeKeyCode(value: string): string {
 
 type EditorKeyPatch = Partial<Omit<EditorKey, "id" | "name">>;
 
-/** キーの更新を反映する関数。反映できた場合は true、gridstack に拒否された場合は false を返す。 */
+/** キーの更新を反映する関数。反映できた場合は `true`、gridstack に拒否された場合は `false` を返す。 */
 type UpdateEditorKey = (patch: EditorKeyPatch) => boolean;
 
 /** 保存時にサーバーへ渡す、グリッドの設定。 */
@@ -80,7 +79,7 @@ const GRID_SPEC = { columns: GRID_COLUMNS, unit: UNIT };
 
 /**
  * 変更の有無を判定するための、編集内容のスナップショット（文字列）を作る。
- * キーの順序の違いを変更とみなさないよう、id で並べ替えてから文字列化する。
+ * キーの順序の違いを変更とみなさないよう、`id` で並べ替えてから文字列化する。
  */
 function snapshotOf(editorKeys: EditorKey[], background: string): string {
   return JSON.stringify({
@@ -89,7 +88,7 @@ function snapshotOf(editorKeys: EditorKey[], background: string): string {
   });
 }
 
-/** 画面に表示する保存の状態。SaveResult に、未操作（idle）と保存中（saving）を加えたもの。 */
+/** 画面に表示する保存の状態。`SaveResult` に、未操作（`idle`）と保存中（`saving`）を加えたもの。 */
 type SaveStatus = { type: "idle" } | { type: "saving" } | SaveResult;
 
 /* -------------------------------------------------------------------------- */
@@ -102,7 +101,7 @@ type EditorContextValue = {
   onSelectId: (id: string | null) => void;
   /** レイアウトが変わったことを通知し、未保存かどうかを再判定する。保存は行わない。 */
   syncDirty: () => void;
-  /** アイコンを描画する関数（標準のアイコンと、icon-urls.json の対応表を使用する）。 */
+  /** アイコンを描画する関数（標準のアイコンと、アイコン URL 対応表（`icon-urls.json`）を使用する）。 */
   iconRender: RemoteKeyIconRender;
   /** キーコードを送信し、結果を通信ログに記録する。 */
   sendKey: (code: string) => Promise<void>;
@@ -112,7 +111,7 @@ type EditorContextValue = {
 
 const EditorContext = createContext<EditorContextValue | null>(null);
 
-/** EditorContext の値を取得する。EditorContext の外で呼び出した場合は、エラーを投げる。 */
+/** `EditorContext` の値を取得する。`EditorContext` の外で呼び出した場合は、エラーを投げる。 */
 function useEditorContext() {
   const context = useContext(EditorContext);
   if (!context) {
@@ -228,12 +227,12 @@ export function EditorKeyView() {
 type EditorKeyPropertyFieldProps = {
   property: "x" | "y" | "w" | "h";
   editorKey: EditorKey;
-  /** input の min。矢印キーによる増減（step）は、この値を起点に数える。 */
+  /** `input` の `min`。矢印キーによる増減（`step`）は、この値を起点に数える。 */
   min: number;
   max?: number;
-  /** この値未満の入力は反映しない（min より大きい値にもできる）。 */
+  /** この値未満の入力は反映しない（`min` より大きい値にもできる）。 */
   minValid?: number;
-  /** キーの種類による制約で値が固定されている場合は true（入力できない）。 */
+  /** キーの種類による制約で値が固定されている場合は `true`（入力できない）。 */
   disabled?: boolean;
   updateEditorKey: UpdateEditorKey;
 };
@@ -241,7 +240,7 @@ type EditorKeyPropertyFieldProps = {
 /** 入力が止まってから反映するまでの待ち時間（ミリ秒）。入力途中の値（「12」を入力する途中の「1」など）を反映しないための猶予。 */
 const FIELD_DEBOUNCE_MS = 300;
 
-/** キーの位置・大きさ（x / y / w / h）を、数値で編集する入力欄。入力が止まってから反映する。 */
+/** キーの位置・大きさ（`x` / `y` / `w` / `h`）を、数値で編集する入力欄。入力が止まってから反映する。 */
 function EditorKeyPropertyField({
   property,
   editorKey,
@@ -254,9 +253,9 @@ function EditorKeyPropertyField({
   const [inputValue, setInputValue] = useState(String(editorKey[property]));
   const timerRef = useRef<number | null>(null);
 
-  // 遅延実行されるコールバックが古い props を参照しないよう、最新の値を ref に保持する。
+  // 遅延実行されるコールバックが古い `props` を参照しないよう、最新の値を `ref` に保持する。
   // レンダー中には更新しない（描画が破棄された場合に、画面に表示されていない値が残るため）。
-  // 画面への反映後（useLayoutEffect）に更新する。
+  // 画面への反映後（`useLayoutEffect`）に更新する。
   const editorKeyRef = useRef(editorKey);
   const updateRef = useRef(updateEditorKey);
   useLayoutEffect(() => {
@@ -273,7 +272,7 @@ function EditorKeyPropertyField({
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: editorKeyが切り替わったときだけ入力値を初期化する。
   useEffect(() => {
-    // 値そのものの変更への追従は、下の effect（currentValue）が行う。
+    // 値そのものの変更への追従は、下の effect（`currentValue`）が行う。
     setInputValue(String(editorKey[property]));
     // 別のキーに切り替わるとき、またはパネルが消えるときは、未反映の入力を破棄する（別のキーに反映しないため）。
     return () => {
@@ -294,7 +293,7 @@ function EditorKeyPropertyField({
 
   /**
    * 入力文字列を検証して反映する。
-   * 反映した場合（または既に同じ値の場合）はその値を返し、反映しなかった場合は null を返す。
+   * 反映した場合（または既に同じ値の場合）はその値を返し、反映しなかった場合は `null` を返す。
    */
   const apply = (value: string): number | null => {
     // 空欄は Number("") が 0 になるため、先に除外する。
@@ -358,8 +357,8 @@ function EditorKeyPropertyField({
 /** 選択中のキーのプロパティ（ラベル、コード、位置、大きさ、色）を編集するパネル。 */
 export function EditorKeyPropertyPanel() {
   const labelInputId = useId();
-  // layoutVersion は add / remove / change / update() のたびに増える。
-  // useGridStack 経由でこれを購読することで、パネルが最新の node を読み直す。
+  // `layoutVersion` は `add` / `remove` / `change` / `update()` のたびに増える。
+  // `useGridStack` 経由でこれを購読することで、パネルが最新の `node` を読み直す。
   const { grid, addWidget } = useGridStack();
   const { selectedId, isDragging, onSelectId, syncDirty, sendKey, sendLog } =
     useEditorContext();
@@ -641,7 +640,7 @@ function CustomKeyForm({
   );
 }
 
-/** RemoteKeyCatalogPanel の props。 */
+/** `RemoteKeyCatalogPanel` の `props`。 */
 export interface RemoteKeyCatalogPanelProps {
   catalog: RemoteKeyCatalogEntry[];
 }
@@ -652,7 +651,7 @@ export function RemoteKeyCatalogPanel({ catalog }: RemoteKeyCatalogPanelProps) {
   const { onSelectId, sendKey, iconRender } = useEditorContext();
 
   const entriesByKind = useMemo(() => {
-    const groups: Partial<Record<RemoteKeyKind, RemoteKeyCatalogEntry[]>> = {};
+    const groups: Partial<Record<string, RemoteKeyCatalogEntry[]>> = {};
     for (const entry of catalog) {
       const { kind } = entry;
       if (groups[kind]) {
@@ -752,7 +751,7 @@ function Toolbar({
 }: {
   dirty: boolean;
   invalid: boolean;
-  /** icon-urls.json の読み込みで、使用できなかった項目の説明。 */
+  /** `icon-urls.json` の読み込みで、使用できなかった項目の説明。 */
   iconWarnings: string[];
   /** 「最新を読み込む」に失敗した理由。編集中の内容は、そのまま残っている。 */
   reloadError: string | null;
@@ -867,13 +866,13 @@ function EditorCanvas({
   initialEditorKeys: EditorKey[];
   initialBackground: string;
   invalid: boolean;
-  /** キーのカタログ。icon-urls.json の内容を反映済み（useEditorData が生成する）。 */
+  /** キーのカタログ。`icon-urls.json` の内容を反映済み（`useEditorData` が生成する）。 */
   catalog: RemoteKeyCatalogEntry[];
-  /** アイコンを描画する関数。icon-urls.json の読み込みが完了してから渡される（useEditorData が待機する）。 */
+  /** アイコンを描画する関数。`icon-urls.json` の読み込みが完了してから渡される（`useEditorData` が待機する）。 */
   iconRender: RemoteKeyIconRender;
-  /** icon-urls.json の読み込みで、使用できなかった項目の説明。 */
+  /** `icon-urls.json` の読み込みで、使用できなかった項目の説明。 */
   iconWarnings: string[];
-  /** 「最新を読み込む」に失敗した理由（なければ null）。 */
+  /** 「最新を読み込む」に失敗した理由（なければ `null`）。 */
   reloadError: string | null;
   onReload: () => void;
 }) {
@@ -884,7 +883,7 @@ function EditorCanvas({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dirty, setDirty] = useState(false);
-  // Preview に渡す、編集中のキー。レイアウトが変わるたびに、syncDirty で読み直す。
+  // Preview に渡す、編集中のキー。レイアウトが変わるたびに、`syncDirty` で読み直す。
   // グリッドは、読み込み時に制約（タブの幅など）を適用した値で作られる。比較の基準も同じ値にして、読み込んだだけで「未保存」にならないようにする。
   const normalizedInitialKeys = useMemo(
     () => initialEditorKeys.map(normalizeEditorKey),
@@ -897,13 +896,13 @@ function EditorCanvas({
   const [catalogSlot, setCatalogSlot] = useState<HTMLElement | null>(null);
   const [propsSlot, setPropsSlot] = useState<HTMLElement | null>(null);
 
-  // 最後に確認できたサーバー上の revision と、その時点の内容。変更しても再描画は不要なため、ref に保持する。
+  // 最後に確認できたサーバー上の `revision` と、その時点の内容。変更しても再描画は不要なため、`ref` に保持する。
   const savedRef = useRef({
     revision: initialRevision,
     snapshot: snapshotOf(normalizedInitialKeys, initialBackground),
   });
   const [invalidNotice, setInvalidNotice] = useState(invalid);
-  // リモコン全体の背景色。描画用に state で、変更の検知と保存用に ref でも保持する。
+  // リモコン全体の背景色。描画用に `state` で、変更の検知と保存用に `ref` でも保持する。
   const [background, setBackground] = useState(initialBackground);
   const backgroundRef = useRef(initialBackground);
 
@@ -1010,7 +1009,7 @@ function EditorCanvas({
     return () => window.removeEventListener("beforeunload", onBeforeUnload);
   }, [dirty]);
 
-  /* --- <GridStack> のイベント。ハンドラは effect の依存になるため、useCallback で参照を安定させる --- */
+  /* --- `<GridStack>` のイベント。ハンドラは effect の依存になるため、`useCallback` で参照を安定させる --- */
 
   const handleDragOrResizeStart = useCallback(
     (_event: Event, el: GridItemHTMLElement) => {
@@ -1028,7 +1027,7 @@ function EditorCanvas({
 
   // 通信ログ。直近の送信結果を1件だけ保持する。
   const [sendLog, setSendLog] = useState<SendLogEntry>();
-  // 送信中は、次の送信を受け付けない（連打で TV に連続して送らないため。ビューアの useRegzaApi と同じ扱い）。
+  // 送信中は、次の送信を受け付けない（連打で TV に連続して送らないため。ビューアの `useRegzaApi` と同じ扱い）。
   const sendInFlight = useRef(false);
   const sendKey = useCallback(async (code: string) => {
     if (sendInFlight.current) return;
@@ -1101,7 +1100,7 @@ function EditorCanvas({
               onResizeStop={handleDragOrResizeStop}
             >
               {/*
-                useGridStack() を使用するパネルは、<GridStack> の children として配置する必要がある。
+                `useGridStack()` を使用するパネルは、`<GridStack>` の `children` として配置する必要がある。
                 ただし描画先は、ポータルで左右のスロットにする（コンテキストはそのまま引き継がれる）。
               */}
               {catalogSlot &&

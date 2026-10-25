@@ -1,5 +1,6 @@
 import { mkdirSync } from "node:fs";
 import { join } from "node:path";
+import { pathToFileURL } from "node:url";
 import { generateApiDocsMd } from "./api-docs";
 import { convertApiJson } from "./api-json";
 import { loadSourceDict } from "./typedoc";
@@ -22,18 +23,29 @@ function parseCliArgs() {
   return { apiJsonDir, typedoc, work, out };
 }
 
-async function main() {
-  const args = parseCliArgs();
+type CliArgs = ReturnType<typeof parseCliArgs>;
+
+export async function cliMain(args: CliArgs) {
   const convertedDir = join(args.work, "converted");
   const documentsDir = join(args.work, "documents");
   mkdirSync(convertedDir, { recursive: true });
   mkdirSync(documentsDir, { recursive: true });
   mkdirSync(args.out, { recursive: true });
 
-  convertApiJson(args.apiJsonDir, convertedDir);
   const sourceDict = loadSourceDict(args.typedoc);
+  convertApiJson(args.apiJsonDir, convertedDir);
   saveJson(join(convertedDir, "sourceDict.json"), sourceDict);
-  await generateApiDocsMd(convertedDir, args.out, documentsDir, sourceDict);
+  await generateApiDocsMd(convertedDir, args.out, documentsDir);
 }
 
-main();
+async function main() {
+  const args = parseCliArgs();
+  await cliMain(args);
+}
+
+if (
+  process.argv[1] &&
+  import.meta.url === pathToFileURL(process.argv[1]).href
+) {
+  await main();
+}

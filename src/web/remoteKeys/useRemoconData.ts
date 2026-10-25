@@ -4,14 +4,14 @@ import type { RemoteKeyIconRender } from "./types";
 import { useIconSet } from "./useIconUrls";
 
 /*
- * remocon.json の座標はセル単位で、そのまま表示に使用する。
- * 単位の換算は RemoteKeyLayout.tsx の中だけで行い、ここでは変換しない。
+ * `remocon.json` の座標はセル単位で、そのまま表示に使用する。
+ * 単位の換算は `RemoteKeyLayout.tsx` の中だけで行い、ここでは変換しない。
  *
- * 保存側（api/utils.ts の toRemoconConfig）は、編集用データの x, y, w, h を
- * 変更せずにコピーしている。そのため remocon.json は、remocon.editor.json と同じ単位（セル）になる。
+ * 保存側（api/utils.ts の `toRemoconConfig`）は、編集用データの `x`, `y`, `w`, `h` を
+ * 変更せずにコピーしている。そのため `remocon.json` は、`remocon.editor.json` と同じ単位（セル）になる。
  */
 
-/** remocon.json の取得先 URL。 */
+/** `remocon.json` の取得先 URL。 */
 export const REMOCON_CONFIG_URL = "/data/remocon.json";
 
 export type RemoconFileState =
@@ -19,7 +19,7 @@ export type RemoconFileState =
   | { type: "loaded"; props: RemoconConfig }
   | { type: "error"; message: string };
 
-/** remocon.json を読み込むフック。毎回サーバーから取得し直す。 */
+/** `remocon.json` を読み込むフック。毎回サーバーから取得し直す。 */
 export function useRemoconFile(): RemoconFileState {
   const [state, setState] = useState<RemoconFileState>({ type: "loading" });
 
@@ -78,9 +78,9 @@ export type RemoconDataState =
 
 /**
  * ビューア用のフック。
- * - remocon.json と icon-urls.json を読み込み、描画に必要なものをまとめて返す。
- * - 両方が揃うまでは loading とする（名前のアイコンが、壊れた画像として一瞬表示されるのを防ぐため）。
- * - icon-urls.json に問題がある場合も、表示は止めず、警告（console.warn）の出力だけにする。
+ * - `remocon.json` と `icon-urls.json` を読み込み、描画に必要なものをまとめて返す。
+ * - 両方が揃うまでは `loading` とする（名前のアイコンが、壊れた画像として一瞬表示されるのを防ぐため）。
+ * - `icon-urls.json` に問題がある場合も、表示は止めず、警告（console.warn）の出力だけにする。
  */
 export function useRemoconData(): RemoconDataState {
   const file = useRemoconFile();

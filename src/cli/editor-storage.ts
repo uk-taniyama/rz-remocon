@@ -8,7 +8,7 @@ import {
   toRemoconConfig,
 } from "../api";
 
-/** データの保存先ディレクトリ。起動時に configureEditorStorage() で設定する。 */
+/** データの保存先ディレクトリ。起動時に `configureEditorStorage()` で設定する。 */
 let dataDir = path.resolve("./data");
 
 /** 編集用データの保存先の設定。 */
@@ -26,7 +26,7 @@ const remoconFile = () => path.join(dataDir, "remocon.json");
 /** 上書きする直前の編集用データの控え。直前の1世代だけを残す。 */
 const backupFile = () => path.join(dataDir, "remocon.editor.json.bak");
 
-/** ファイルがまだ存在しない場合のリビジョン。初回保存時の null も、同じ値として扱う。 */
+/** ファイルがまだ存在しない場合のリビジョン。初回保存時の `null` も、同じ値として扱う。 */
 const EMPTY_REVISION = "0";
 
 /** 保存の結果。競合した場合は、保存せずに最新のリビジョンを返す。 */
@@ -34,13 +34,13 @@ export type SaveOutcome =
   | { type: "saved"; revision: string }
   | { type: "conflict"; revision: string };
 
-/** ファイルの内容からリビジョンを算出する。ファイルが存在しない場合（null）は EMPTY_REVISION を返す。 */
+/** ファイルの内容からリビジョンを算出する。ファイルが存在しない場合（`null`）は `EMPTY_REVISION` を返す。 */
 function revisionOf(text: string | null): string {
   if (text === null) return EMPTY_REVISION;
   return createHash("sha256").update(text).digest("hex").slice(0, 16);
 }
 
-/** ファイルをテキストとして読み込む。ファイルが存在しない場合は null を返す。 */
+/** ファイルをテキストとして読み込む。ファイルが存在しない場合は `null` を返す。 */
 async function readText(file: string): Promise<string | null> {
   try {
     return await readFile(file, "utf8");
@@ -75,13 +75,13 @@ export type LoadResult = {
 };
 
 /**
- * 編集用データ（remocon.editor.json）を読み込む。
- * 内容が不正な場合は例外にせず、invalid を true にして返す。
+ * 編集用データ（`remocon.editor.json`）を読み込む。
+ * 内容が不正な場合は例外にせず、`invalid` を `true` にして返す。
  *
  * @throws ファイルの読み込みに失敗した場合。
  */
 export async function loadEditorConfig(): Promise<LoadResult> {
-  const text = await readText(editorFile()); // 読み込みに失敗した場合は、そのまま例外を投げる（STORAGE_ERROR になる）
+  const text = await readText(editorFile()); // 読み込みに失敗した場合は、そのまま例外を投げる（`STORAGE_ERROR` になる）
   if (text === null) {
     return { revision: EMPTY_REVISION, config: null, invalid: false };
   }
@@ -98,11 +98,11 @@ export async function loadEditorConfig(): Promise<LoadResult> {
 }
 
 /**
- * 編集用データ（remocon.editor.json）と、そこから導出した表示用データ（remocon.json）を保存する。
- * 既存の編集用データは、上書きの前に remocon.editor.json.bak へ控える（直前の1世代）。
- * expectedRevision が現在のリビジョンと一致しない場合は、保存せずに競合として返す。
+ * 編集用データ（`remocon.editor.json`）と、そこから導出した表示用データ（`remocon.json`）を保存する。
+ * 既存の編集用データは、上書きの前に `remocon.editor.json.bak` へ控える（直前の1世代）。
+ * `expectedRevision` が現在のリビジョンと一致しない場合は、保存せずに競合として返す。
  *
- * @param expectedRevision - 読み込み時のリビジョン。初回保存の場合は null。
+ * @param expectedRevision - 読み込み時のリビジョン。初回保存の場合は `null`。
  * @param config - 保存する編集用データ。
  */
 export function saveEditorConfig(

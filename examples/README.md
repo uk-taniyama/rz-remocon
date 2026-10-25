@@ -61,11 +61,11 @@ npx rz-remocon server -p 8485 -d output
 
 `builder.ts` は、次の流れです。
 
-1. `remoteKeysBuilder` でキーを並べる（座標と寸法はセル。1キー = 4セル）。
+1. `remoconBuilder` でキーを並べる（座標と寸法はセル。1キー = 4セル）。
 2. `build()` の結果に `version` を付けて、`output/remocon.json` に書き出す。
 3. `generate()`（`rz-remocon/gen`）で `index.html` と `assets/` を作る。
 
-標準にないアイコンは、画像のURLを `icon` に指定します。名前で登録したいときや、別のアイコンセットを使うときは、`createGenerateTools([builtinIcons, fromUrls({...}), fromComponents({...})])` で `decorator` と `iconRender` を組で作り、`remoteKeysBuilder` と `generate()` に渡します（アイコンセットは配列で渡します）。
+標準にないアイコンは、画像のURLを `icon` に指定します。名前で登録したいときや、別のアイコンセットを使うときは、`createGenerateTools([builtinIcons, fromUrls({...}), fromComponents({...})])` で `decorator` と `iconRender` を組で作り、`remoconBuilder` と `generate()` に渡します（アイコンセットは配列で渡します）。
 
 ## タブで切り替えるリモコン
 
@@ -97,7 +97,7 @@ npx rz-remocon server -p 8485 -d output/icons
 `builder-editor.ts` は、Builder の結果を、エディタで編集できる形で `data/` に保存します。
 
 - `build()`: 表示用の設定。`version` を付けて `data/remocon.json` に保存する。
-- `buildEditor()`: 編集用の設定。`data/remocon.editor.json` に保存する。キーの `id` は `k1`、`k2`、… になる。
+- `buildEditor()`: 編集用の設定。`data/remocon.editor.json` に保存する。
 - アイコンを付けたキーは、`build()` ではラベルが省かれ、`buildEditor()` ではラベルの文字列が残る。`label` を指定すると、その文字列を表示する。
 
 ```bash

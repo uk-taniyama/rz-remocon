@@ -1,15 +1,16 @@
 /**
- * generateFromFile() のオプション。
+ * JSON ファイルから静的リモコンを生成するときのオプション。
  */
 export interface GenerateFromFileOpts {
-  /** 入力する remocon.json のパス。 */
+  /** 入力する `remocon.json` のパス。 */
   inputJson: string;
-  /** 出力先のディレクトリ。index.html と assets/ を出力する。 */
+  /** 出力先のディレクトリ。`index.html` と `assets/` を出力する。 */
   outputDir: string;
   /**
-   * アイコン名と画像 URL の対応表（icon-urls.json）のパス。
-   * 省略した場合は、入力の remocon.json と同じディレクトリの icon-urls.json を使用する（存在しなければ空の対応表）。
-   * 指定したファイルが見つからない場合は、エラーにする。
+   * アイコン URL 対応表（`icon-urls.json`）のパス。
+   *
+   * - 省略した場合は、入力の `remocon.json` と同じディレクトリの `icon-urls.json` を使用する（存在しなければ空のアイコン URL 対応表）。
+   * - 指定したファイルが見つからない場合は、エラーを投げる。
    */
   iconUrls?: string;
   /** @internal 開発用。 */

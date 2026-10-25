@@ -2,7 +2,7 @@ import type { RemoconConfig } from "../api";
 import type { RemoteKeyIconRender } from "../web/remoteKeys";
 import { RemoteKeyLayout } from "../web/remoteKeys/RemoteKeyLayout";
 
-/** HtmlView の props。 */
+/** `HtmlView` の `props`。 */
 export interface HtmlViewProps {
   cssPath: string;
   jsPath: string;
@@ -12,7 +12,7 @@ export interface HtmlViewProps {
 
 /**
  * 静的リモコンの HTML ドキュメント全体を表すコンポーネント。
- * MainView と同じ構成の画面を描画するため、MainView と同じ見た目の HTML を生成できる。
+ * `MainView` と同じ構成の画面を描画するため、`MainView` と同じ見た目の HTML を生成できる。
  */
 export default function HtmlView({
   cssPath,
@@ -52,7 +52,7 @@ export default function HtmlView({
   );
 }
 
-/** HtmlView を描画する要素を生成する。 */
+/** `HtmlView` を描画する要素を生成する。 */
 export function renderHtml(props: HtmlViewProps) {
   return <HtmlView {...props} />;
 }

@@ -10,19 +10,13 @@ import {
   saveDocuments,
   transformApiModel,
 } from "@fluid-tools/api-markdown-documenter";
-import type {
-  Heading,
-  Html,
-  Nodes,
-  Parent,
-  Root,
-  RootContent,
-  TableCell,
-} from "mdast";
-import remarkParse from "remark-parse";
-import { unified } from "unified";
-import type { SourceDict } from "./typedoc";
-import { itemKey, saveJsonSafe } from "./utils";
+import type { ApiFunction } from "@microsoft/api-extractor-model";
+import type { DocComment } from "@microsoft/tsdoc";
+import type { Heading, Html, Nodes, Root, RootContent, TableCell } from "mdast";
+import { parseMarkdown } from "./markdown";
+import { toDocCommentRecord } from "./tsdoc";
+import { getSourceList, type SourceDict } from "./typedoc";
+import { saveJsonSafe } from "./utils";
 
 function getTexts(node: Nodes) {
   if ("children" in node) {
@@ -160,25 +154,6 @@ function withRoot(root: Nodes, callback: (root: Root) => void) {
   callback(root);
 }
 
-function dropPosition<T extends Parent>(parent: T): T {
-  const { position, children, ...other } = parent;
-  return {
-    ...other,
-    children: children.map(({ position, ...child }) => {
-      if ("children" in child) {
-        return dropPosition(child);
-      } else {
-        return child;
-      }
-    }),
-  } as T;
-}
-
-function parseMarkdown(markdown: string): Root {
-  const root = unified().use(remarkParse).parse(markdown);
-  return dropPosition(root);
-}
-
 const reHeadingWithId = /<h(\d) id="(.+)">(.+)<\/h\d>/;
 
 export function splitHeadingWithId(node: RootContent): RootContent[] {
@@ -235,7 +210,6 @@ function addSourceLink(
   node: RootContent,
   pkg: string,
   parents: string[],
-  sourceDict: SourceDict,
 ): RootContent[] {
   if (node.type !== "heading" || !isSourceLinkTarget(node, parents)) {
     return [node];
@@ -244,7 +218,7 @@ function addSourceLink(
   if (!name) {
     return [node];
   }
-  const sourceList = sourceDict[itemKey(pkg, name)];
+  const sourceList = getSourceList(pkg, name);
   if (!sourceList?.length) {
     return [node];
   }
@@ -262,35 +236,28 @@ function addSourceLink(
 }
 
 function createBreadcrumb(parents: string[]) {
-  const md = ['[README](../../README.md)'];
+  const md = ["[README](../../README.md)"];
   for (let i = 0; i < parents.length; i += 1) {
     if (i < parents.length - 1) {
-      md.push(`[${parents[i]}](../../${parents[i]}/)`);
+      md.push(`[${parents[i]}](../${parents[i]}/)`);
     }
   }
   md.push(parents[parents.length - 1]);
-  const parsed = parseMarkdown(md.join(' / '));
+  const parsed = parseMarkdown(md.join(" / "));
   return parsed.children[0];
 }
 
-function patchRoot(
-  root: Root,
-  sourceDict: SourceDict,
-  parents: string[],
-): void {
-  const pkgMap: Record<string, string> = {
-    "rz-remocon": "lib",
-    "rz-remocon-api": "api",
-    "rz-remocon-gen": "gen",
-  };
+const pkgMap: Record<string, string> = {
+  "rz-remocon": "lib",
+  "rz-remocon-api": "api",
+  "rz-remocon-gen": "gen",
+};
 
+function patchRoot(root: Root, parents: string[]): void {
   const pkg = pkgMap[parents[0]];
-  if (pkg == null) {
-    throw new Error(`Unknown package name: ${parents.join(",")}`);
-  }
   root.children = root.children.flatMap((node) => splitHeadingWithId(node));
   root.children = root.children.flatMap((node) =>
-    addSourceLink(node, pkg, parents, sourceDict),
+    addSourceLink(node, pkg, parents),
   );
   root.children.forEach((node) => {
     if (node.type === "table") {
@@ -327,9 +294,9 @@ function getParentNames(item: ApiItem, stack: string[]) {
   return stack;
 }
 
-function patchDocument(document: ApiDocument, sourceDict: SourceDict) {
+function patchDocument(document: ApiDocument) {
   const parents = getParentNames(document.apiItem, []);
-  withRoot(document.contents, (root) => patchRoot(root, sourceDict, parents));
+  withRoot(document.contents, (root) => patchRoot(root, parents));
 }
 
 function patchMarkdown(md: string): string {
@@ -339,6 +306,11 @@ function patchMarkdown(md: string): string {
       .replaceAll("rz-remocon/api/", "rz-remocon-api/")
       .replaceAll("rz-remocon-gen", "rz-remocon/gen")
       .replaceAll("rz-remocon/gen/", "rz-remocon-gen/")
+      // <a href="../${link}">$text</a>の形式をmdに置換。
+      .replace(
+        /<a href="(\.\.\/[^"]+)">([^<]+)<\/a>/g,
+        (_, link, text) => `[${text}](${link})`,
+      )
       // リンクを展開する。
       .replace(/\(\.\.\/[^)]+\)/g, (substring) => {
         if (substring.endsWith("/)")) {
@@ -350,7 +322,7 @@ function patchMarkdown(md: string): string {
         return substring.replace("-class", "-class.md");
       })
   );
-  // コメントの <img> が二重にエスケープされて出るのを直す
+  // コメントの `<img>` が二重にエスケープされて出るのを直す
   // （表の中の html は <code>、本文は `…` にする）
   // →実際にhtml変換すると平気らしいのでやらない。
   // .replaceAll("&#x26;lt;img&#x26;gt;", "<code>&lt;img&gt;</code>")
@@ -396,17 +368,121 @@ export async function saveRenderedDocuments(
   await saveDocuments(documents, { outputDirectoryPath });
 }
 
+interface VisitContext {
+  apiDocument: ApiDocument;
+  pkgName: string;
+  pkg: string;
+  parents: ApiItem[];
+}
+
+type VisitFn = (apiItem: ApiItem, context: VisitContext) => void;
+
+export function traverseApiItem(
+  apiItem: ApiItem,
+  context: VisitContext,
+  visit: VisitFn,
+) {
+  visit(apiItem, context);
+  const nextContext = {
+    ...context,
+    parents: [...context.parents, apiItem],
+  };
+  apiItem.members.forEach((member) => {
+    traverseApiItem(member, nextContext, visit);
+  });
+}
+
+export function traverseApiDocument(apiDocument: ApiDocument, visit: VisitFn) {
+  if (apiDocument.apiItem.kind !== "Package") {
+    return;
+  }
+  const pkgName = apiDocument.apiItem.displayName;
+  const pkg = pkgMap[pkgName];
+  if (pkg == null) {
+    throw new Error(`Unknown package name: ${pkgName}`);
+  }
+  const context: VisitContext = {
+    pkgName,
+    pkg,
+    apiDocument,
+    parents: [],
+  };
+  traverseApiItem(apiDocument.apiItem, context, visit);
+}
+
+export function getComment(apiItem: ApiItem) {
+  if ("tsdocComment" in apiItem) {
+    return apiItem.tsdocComment as DocComment;
+  } else {
+    return undefined;
+  }
+}
+
+export function toApiFunction(apiItem: ApiItem): ApiFunction | undefined {
+  if (apiItem.kind === "Function") {
+    return apiItem as unknown as ApiFunction;
+  }
+  return undefined;
+}
+
+function logMissingComment(
+  sourceList: SourceDict[string],
+  parents: ApiItem[],
+  item: ApiItem,
+  name?: string,
+) {
+  const names: string[] = [];
+  parents.forEach((p) => {
+    if (p.displayName) {
+      names.push(p.displayName);
+    }
+  });
+  names.push(item.displayName);
+  if (name) {
+    names.push(name);
+  }
+  console.log(
+    `src/${sourceList[0].fileName}:${sourceList[0].line}: コメントがない: ${names.join(" ")}`,
+  );
+}
+
+export function validateApiDocument(apiDocument: ApiDocument) {
+  traverseApiDocument(
+    apiDocument,
+    (apiItem: ApiItem, context: VisitContext) => {
+      const comment = getComment(apiItem);
+      const sourceList = getSourceList(context.pkg, apiItem.displayName);
+      if (sourceList == null) {
+        return;
+      }
+      if (comment == null) {
+        logMissingComment(sourceList, context.parents, apiItem);
+        return;
+      }
+      const apiFunction = toApiFunction(apiItem);
+      if (apiFunction) {
+        const docComment = toDocCommentRecord(comment);
+        apiFunction.parameters.forEach(({ name }) => {
+          if (name in docComment.params) {
+            return;
+          }
+          logMissingComment(sourceList, context.parents, apiItem, name);
+        });
+      }
+    },
+  );
+}
+
 /**
- * API Extractor の .api.json から Markdown の API リファレンスを生成する。
+ * API Extractor の `.api.json` から Markdown の API リファレンスを生成する。
  *
- * @param modelDirectoryPath - .api.json が入っているディレクトリ
+ * @param modelDirectoryPath - `.api.json` が入っているディレクトリ
  * @param outputDirectoryPath - Markdown の出力先ディレクトリ
  */
 export async function generateApiDocsMd(
   modelDirectoryPath: string,
   outputDirectoryPath: string,
   workDirectoryPath: string,
-  sourceDict: SourceDict,
 ): Promise<void> {
   const documents = (await loadApiDocuments(modelDirectoryPath))
     // Modelを取り除く
@@ -414,7 +490,8 @@ export async function generateApiDocsMd(
 
   saveJsonSafe(`${workDirectoryPath}/documents.json`, documents);
   documents.forEach((d) => {
-    patchDocument(d, sourceDict);
+    validateApiDocument(d);
+    patchDocument(d);
   });
   saveJsonSafe(`${workDirectoryPath}/documents.patched.json`, documents);
 
@@ -427,15 +504,10 @@ export async function generateApiDocsMd(
     })),
   );
 
-  const patched = rendered
-    .map((d) => {
-      console.log(d.apiItem.displayName);
-      return d;
-    })
-    .map((d) => ({
-      ...d,
-      contents: patchMarkdown(d.contents),
-    }));
+  const patched = rendered.map((d) => ({
+    ...d,
+    contents: patchMarkdown(d.contents),
+  }));
   saveJsonSafe(
     `${workDirectoryPath}/rendered.patched.json`,
     rendered.map((d) => ({

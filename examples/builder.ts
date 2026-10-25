@@ -1,5 +1,5 @@
 import { mkdirSync, writeFileSync } from "node:fs";
-import { RemoteKeys, remoteKeysBuilder } from "rz-remocon/api";
+import { RemoteKeys, remoconBuilder } from "rz-remocon/api";
 import {
   builtinIcons,
   createGenerateTools,
@@ -9,7 +9,7 @@ import {
 
 // Builder でリモコンを組み立て、静的なリモコン（output/）を生成する。
 //
-//   1. remoteKeysBuilder でキーを並べる（座標と寸法はセル単位。1キー = 4セル）
+//   1. remoconBuilder でキーを並べる（座標と寸法はセル単位。1キー = 4セル）
 //   2. build() の結果に version を付けて、remocon.json として保存する
 //   3. build() の結果を generate() に渡して、index.html と assets/ を生成する
 //
@@ -27,12 +27,12 @@ const { decorator, iconRender } = createGenerateTools([
   fromUrls({ custom: "https://example.com/icon.svg" }),
 ]);
 
-const remocon = remoteKeysBuilder({
+const remocon = remoconBuilder({
   columns: 20, // 5キー分の幅
   background: "#0f172a",
   decorator,
 })
-  // 1行目: 電源と入力切替。間を2キー分空ける
+  // 1行目: 電源と入力切換。間を2キー分空ける
   .add(RemoteKeys.powerOn, { color: "#ef4444" })
   .spacer(8)
   .add(RemoteKeys.inputToggle)

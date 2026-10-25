@@ -10,7 +10,7 @@ REGZA の接続登録・認証からリモコン操作までを行え、ライ�
 - REGZA の接続登録・Digest 認証に対応
 - リモコン画面をエディタで編集・保存（キーの配置、色、背景色、アイコン）
 - 編集したリモコンを、認証なしで動く静的な HTML として生成（`generate`）
-- ライブラリとして利用可能（`rz-remocon/api`、`rz-remocon/gen`）
+- ライブラリとして利用可能（`rz-remocon/api`、`rz-remocon/gen`。[ライブラリとして使う](#ライブラリとして使う)）
 
 ## 必要な環境
 
@@ -24,6 +24,27 @@ REGZA の接続登録・認証からリモコン操作までを行え、ライ�
 ```bash
 npm install
 ```
+
+## ライブラリとして使う
+
+ライブラリとしての入口は 3 つです。リファレンス（`refs/`）は `npm run build` で生成します（[ビルドの流れ](docs/build.md)）。
+
+| import | 内容 |
+|---|---|
+| [`rz-remocon`](refs/rz-remocon/index.md) | REGZA への接続・認証・キー送信 |
+| [`rz-remocon/api`](refs/rz-remocon-api/index.md) | Web API のクライアント、キー定義（`RemoteKeys`）、Builder、設定のスキーマ |
+| [`rz-remocon/gen`](refs/rz-remocon-gen/index.md) | 静的リモコンの生成（`generate`）、アイコンセット |
+
+使い方は、次の例を参照してください。実行手順は [examples/README.md](examples/README.md) にまとめています。
+
+- [REGZA に直接接続する](examples/direct.ts)
+- [組み込みサーバー経由で接続する](examples/api-client.ts)
+- [Builder でリモコンを作って静的ファイルを生成する](examples/builder.ts)
+- [タブで切り替えるリモコンを作る](examples/builder-tabs.ts)
+- [アイコンを足す](examples/builder-icons.ts)
+- [アイコン名と画像 URL の表を使う](examples/builder-icon-urls.ts)
+- [Builder で作ったリモコンを、エディタで編集する](examples/builder-editor.ts)
+- [独自のリモコン画面を配信する](examples/custom-ui/index.html)
 
 ## CLI
 
@@ -47,7 +68,7 @@ npx rz-remocon confirm 1234
 
 接続に成功すると、認証情報が設定ファイルに保存されます。
 
-### 対応 API を確認する(デバッグ用)
+### 対応 API を確認する（デバッグ用）
 
 REGZA が対応している API を取得します。
 
@@ -127,7 +148,7 @@ npx rz-remocon server -d ./public
 npx rz-remocon server -D ./my-data
 ```
 
-このディレクトリは、エディタの保存先であり、`/data/` として配信もされます。
+このディレクトリは、エディタの保存先であり、`/data/` として配信もされます。`icon-urls.json` と `color-map.json` も、ここ（既定は `./data`）から読まれます（[設定ファイル](#設定ファイル)）。
 
 ### CORS を設定する
 
@@ -189,7 +210,6 @@ http://localhost:8484/editor.html
 
 - 画像は、`https://...` の URL、`data:image/...`、パス（`logo.svg`、`icons/a.svg`、`/logo.svg` など）で指定できます。
 - 標準のアイコンと同じ名前（`powerOn` など）を書くと、こちらが優先されます。
-- `-D` で `data/` の場所を変えたときは、そこの `icon-urls.json` が使われます。
 - `/logo.svg` のような絶対パスの画像は、`-d` の静的ディレクトリに置いて配信します。
 
 #### `sample-icon-urls-from-google-favicons` コマンド（個人用のサンプル）
@@ -223,7 +243,7 @@ npx rz-remocon default-color-map [-o data] [-f]
 - 色は `#RRGGBB` の形式だけ使えます。
 - ファイルがなくても動きます（標準の色で決めます）。不正な項目があっても、その項目だけを飛ばして、使える項目は使います。飛ばした項目は、ブラウザのコンソールに出ます。
 - すでに保存したキーの色（`remocon.json` の `color`）は変わりません。新しく追加するキーに効きます。
-- `-D` で `data/` の場所を変えたときは、そこの `color-map.json` が使われます。`generate` は `remocon.json` の色をそのまま使うので、`color-map.json` は読みません。
+- `generate` は `remocon.json` の色をそのまま使うので、`color-map.json` は読みません。
 
 ## 静的リモコンを生成する
 
@@ -236,37 +256,12 @@ npx rz-remocon generate -i data/remocon.json -o output
 - 既定は `-i data/remocon.json`、`-o output` です。エディタで保存する前は `data/remocon.json` がないので、標準のリモコンから作るときは `-i dist/public/data/remocon.json` を指定します。
 - 出力先に `index.html` と `assets/` が作られます。
 - アイコンの表は、`-i` と同じディレクトリの `icon-urls.json` があれば、それを使います。別のファイルは `--icon-urls <path>` で指定します（指定したファイルがないとエラーです）。不正な項目があるときは、項目を挙げて警告し、その項目だけ飛ばします。
-- 生成したファイルは、同じ CLI の `server` で配信できます。
-
-```bash
-npx rz-remocon server -d output
-```
+- 生成したファイルは、同じ CLI の `server` で配信できます（`npx rz-remocon server -d output`）。ビルドから配信までの手順は [examples/README.md](examples/README.md) を参照してください。
 
 > **注意**
 >
 > `generate` は `npm run build` の後で実行してください（ビルドで作られる `dist/` の中のファイルを使います）。
 > `npm run cli -- generate` のように `tsx` から実行すると、動きません。
-
-## packages
-
-公開している入口は 3 つです。
-
-| import | 内容 |
-|---|---|
-| [`rz-remocon`](refs/rz-remocon/index.md) | REGZA への接続・認証・キー送信 |
-| [`rz-remocon/api`](refs/rz-remocon-api/index.md) | Web API のクライアント、キー定義（`RemoteKeys`）、Builder、設定のスキーマ |
-| [`rz-remocon/gen`](refs/rz-remocon-gen/index.md) | 静的リモコンの生成（`generate`）、アイコンセット |
-
-使い方は、次の例を参照してください。
-
-- [REGZA に直接接続する](examples/direct.ts)
-- [組み込みサーバー経由で接続する](examples/api-client.ts)
-- [Builder でリモコンを作って静的ファイルを生成する](examples/builder.ts)
-- [タブで切り替えるリモコンを作る](examples/builder-tabs.ts)
-- [アイコンを足す](examples/builder-icons.ts)
-- [アイコン名と画像 URL の表を使う](examples/builder-icon-urls.ts)
-- [Builder で作ったリモコンを、エディタで編集する](examples/builder-editor.ts)
-- [独自のリモコン画面を配信する](examples/custom-ui/index.html)
 
 ## 設定ファイル
 
@@ -280,8 +275,10 @@ npx rz-remocon server -d output
 |---|---|
 | `data/remocon.editor.json` | エディタの編集データ（正本） |
 | `data/remocon.json` | 表示用のリモコン設定（`/` と `generate` が読む） |
-| `data/icon-urls.json` | アイコン名と画像 URL の表（任意。`/`、エディタ、`generate` が読む） |
-| `data/color-map.json` | キー名・種類と色の表（任意。エディタが読む） |
+| `data/icon-urls.json` | アイコン名と画像 URL の表（任意。`/`、エディタ、`generate` が読む。[アイコンを追加する](#アイコンを追加する)） |
+| `data/color-map.json` | キー名・種類と色の表（任意。エディタが読む。[キーの色を変える](#キーの色を変える)） |
+
+`server` の `-D` で `data/` の場所を変えたときは、そこのファイルが使われます。
 
 ## 開発
 
@@ -297,6 +294,8 @@ npm run dev
 npm run build
 ```
 
+`dist/`（配布物）と `refs/`（API リファレンス）を作ります。流れは [docs/build.md](docs/build.md) にまとめています。
+
 ビルドでは、標準のリモコン（`src/gen/default-remocon.ts`）も `dist/public/data/remocon.json` に出力されます。
 このとき、作業ディレクトリの `data/icon-urls.json` と `data/color-map.json` があれば読み、標準のリモコンのアイコンと色に反映します。公開するものをビルドするときは、これらのファイルを置かないでください。
 `data/` に標準のリモコンを書き出す場合は、次を実行します（`remocon.json` と `remocon.editor.json` を生成します）。
@@ -311,17 +310,15 @@ npm run default-remocon
 npm test
 ```
 
-### 型チェック
+### 型チェック・lint / format
 
 ```bash
-npm run tsc
+npm run tsc     # 型チェック
+npm run check   # lint / format（Biome。直せるものは自動で直す）
+npm run lint    # check と tsc を続けて実行（片方が失敗しても、両方の結果を出す）
 ```
 
-### lint / format
-
-```bash
-npm run check
-```
+方針と実装状況は [docs/todo.md](docs/todo.md)、キーコードのメモは [docs/memo-code.md](docs/memo-code.md) にあります。
 
 ## プロジェクト構成
 
@@ -336,9 +333,12 @@ npm run check
 ├── scripts/          # ビルド補助（build.sh、静的リモコンの送信処理 remote.js）
 ├── public/           # 静的ファイル（favicon など。ビルドで dist/public にコピーされる）
 ├── data/             # リモコンの設定（実行時に生成）
+├── dist/             # ビルドの出力（配布物。毎回作り直す）
+├── work/             # API Extractor などの中間生成物（ビルドが毎回消す。コミットしない）
+├── typedoc/          # ソース位置の取得に使う typedoc の設定（独立した npm プロジェクト）
 ├── docs/             # 方針と実装状況（todo.md）、ビルドの流れ（build.md）、キーコードのメモ（memo-code.md）
 ├── refs/             # API リファレンス（ビルドで生成。入口は index.md）
-├── examples/         # 利用例
+├── examples/         # 利用例（実行手順は examples/README.md）
 ├── package.json
 ├── README.md
 ├── regza.json        # 実行時に生成される設定

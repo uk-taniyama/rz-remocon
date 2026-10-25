@@ -1,11 +1,11 @@
 import { mkdirSync, writeFileSync } from "node:fs";
-import { RemoteKeys, remoteKeysBuilder } from "rz-remocon/api";
+import { RemoteKeys, remoconBuilder } from "rz-remocon/api";
 import { builtinIcons, createGenerateTools } from "rz-remocon/gen";
 
 // Builder で組み立てたリモコンを、エディタで編集できる形（data/）で保存する。
 //
 //   - build():       表示用の設定。remocon.json の形（version を付けて保存する）。
-//   - buildEditor(): 編集用の設定。remocon.editor.json の形。キーに id（k1、k2、...）が付く。
+//   - buildEditor(): 編集用の設定。remocon.editor.json の形。
 //
 // 2 つとも保存すると、エディタで開いて編集を続けられる。
 // 保存先は server の既定の data/（-D で変更できる）。
@@ -22,7 +22,7 @@ const dataDir = "data";
 
 const { decorator } = createGenerateTools([builtinIcons]);
 
-const builder = remoteKeysBuilder({
+const builder = remoconBuilder({
   columns: 20,
   background: "#0f172a",
   decorator,

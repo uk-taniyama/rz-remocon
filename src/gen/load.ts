@@ -1,5 +1,5 @@
 /*
- * 静的リモコンの入力（remocon.json、icon-urls.json、color-map.json）の読み込み。
+ * 静的リモコンの入力（`remocon.json`、`icon-urls.json`、`color-map.json`）の読み込み。
  */
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
@@ -11,17 +11,17 @@ import {
   remoconConfigSchema,
 } from "../api";
 
-/** 入力 JSON と同じディレクトリに置かれた、icon-urls.json の既定のパスを返す。 */
+/** 入力 JSON と同じディレクトリにある、`icon-urls.json` のパスを返す。 */
 export function defaultIconUrlsPath(inputJson: string): string {
   return path.join(path.dirname(path.resolve(inputJson)), "icon-urls.json");
 }
 
 /**
- * 名前から値への対応表の JSON（icon-urls.json、color-map.json）を読み込む、共通の処理。
+ * 名前から値への対応表を読み込む共通の処理。
  *
- * - required が false の場合、ファイルが存在しなければ empty を返す。
- * - required が true の場合、ファイルが存在しなければ例外を投げる。
- * - required の値にかかわらず、ファイルの読み込みまたは JSON の解析に失敗した場合は例外を投げる。
+ * - `required` が `false` の場合、ファイルが存在しなければ `empty` を返す。
+ * - `required` が `true` の場合、ファイルが存在しなければエラーを投げる。
+ * - `required` の値にかかわらず、ファイルの読み込みまたは JSON の解析に失敗した場合はエラーを投げる。
  * - 不正な項目がある場合は、警告を出して不正な項目だけを除外し、正常な項目を返す。
  *
  * @param file - JSON ファイルのパス。
@@ -62,14 +62,14 @@ function loadJsonTableFile<T>(
 }
 
 /**
- * `icon-urls.json` を読み込み、アイコン名と画像 URL の対応表を返す。
+ * ファイルを読み込み、アイコン URL 対応表を返す。
  *
- * - required が false の場合、ファイルが存在しなければ空の対応表を返す。
- * - required が true の場合、ファイルが存在しなければ例外を投げる。
- * - required の値にかかわらず、ファイルの読み込みまたは JSON の解析に失敗した場合は例外を投げる。
+ * - `required` が `false` の場合、ファイルが存在しなければ空のアイコン URL 対応表を返す。
+ * - `required` が `true` の場合、ファイルが存在しなければエラーを投げる。
+ * - `required` の値にかかわらず、ファイルの読み込みまたは JSON の解析に失敗した場合はエラーを投げる。
  * - 不正な項目がある場合は、警告を出して不正な項目だけを除外し、正常な項目を返す。
  *
- * @param file - icon-urls.json のパス。
+ * @param file - `icon-urls.json` のパス。
  * @param required - ファイルの存在を必須とするか。
  */
 export function loadIconUrlsFile(file: string, required: boolean): IconUrls {
@@ -86,15 +86,16 @@ export function loadIconUrlsFile(file: string, required: boolean): IconUrls {
 }
 
 /**
- * `color-map.json` を読み込み、キー名・kind から色への対応表を返す。
- * 標準の色に上書きする分だけを書く。mergeColorMap() に渡すと、標準の色に重ねられる。
+ * `color-map.json` を読み込み、色マップを返す。
  *
- * - required が false の場合、ファイルが存在しなければ空の対応表を返す。
- * - required が true の場合、ファイルが存在しなければ例外を投げる。
- * - required の値にかかわらず、ファイルの読み込みまたは JSON の解析に失敗した場合は例外を投げる。
+ * - 既定の色に上書きする分だけを書く。
+ * - {@link rz-remocon-api#mergeColorMap} に渡すと、既定の色に重ねられる。
+ * - `required` が `false` の場合、ファイルが存在しなければ空の色マップを返す。
+ * - `required` が `true` の場合、ファイルが存在しなければエラーを投げる。
+ * - `required` の値にかかわらず、ファイルの読み込みまたは JSON の解析に失敗した場合はエラーを投げる。
  * - 不正な項目がある場合は、警告を出して不正な項目だけを除外し、正常な項目を返す。
  *
- * @param file - color-map.json のパス。
+ * @param file - `color-map.json` のパス。
  * @param required - ファイルの存在を必須とするか。
  */
 export function loadColorMapFile(
@@ -114,9 +115,9 @@ export function loadColorMapFile(
 }
 
 /**
- * remocon.json を読み込み、リモコン設定として検証する。
+ * `remocon.json` を読み込み、リモコン設定として検証する。
  *
- * @param input - remocon.json のパス。
+ * @param input - `remocon.json` のパス。
  * @returns 検証済みのリモコン設定。
  * @throws ファイルの読み込み、JSON の解析、または設定の検証に失敗した場合。
  */

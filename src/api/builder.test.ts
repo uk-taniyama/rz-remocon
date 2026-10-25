@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   type RemoteKeyDecorator,
   type RemoteKeyDraft,
-  remoteKeysBuilder,
+  remoconBuilder,
 } from "./builder";
 import {
   isSpecialKey,
@@ -15,7 +15,7 @@ import { editorRemoconConfigSchema } from "./schema";
 import { toRemoconConfig } from "./utils";
 
 describe("RemoconBuilder.tab()", () => {
-  const builder = () => remoteKeysBuilder({ columns: 20, unit: 4 });
+  const builder = () => remoconBuilder({ columns: 20, unit: 4 });
 
   it("途中の行でも、自動で改行してから置く（全幅・1キー高さ）", () => {
     const { keys } = builder()
@@ -69,21 +69,21 @@ describe("RemoconBuilder.tab()", () => {
 describe("RemoconBuilder（特殊キーのガード）", () => {
   it("addCustom で $ の名前は作れない", () => {
     expect(() =>
-      remoteKeysBuilder({ columns: 20 }).addCustom("$TAB$", "", {
+      remoconBuilder({ columns: 20 }).addCustom("$TAB$", "", {
         label: "x",
       }),
     ).toThrow("不正な名前です");
   });
 
   it("label() は、コードのないラベルキーを置く", () => {
-    const { keys } = remoteKeysBuilder({ columns: 20, unit: 4 })
+    const { keys } = remoconBuilder({ columns: 20, unit: 4 })
       .label("メモ", { w: 8 })
       .build();
 
     expect(keys[0]).toMatchObject({
       name: LABEL_KEY_NAME,
       label: "メモ",
-      code: "",
+      code: undefined,
       x: 0,
       y: 0,
       w: 8,
@@ -100,7 +100,7 @@ describe("RemoconBuilder（ラベルの表示）", () => {
     showLabel: false,
   });
   const builder = (decorator?: RemoteKeyDecorator) =>
-    remoteKeysBuilder({ columns: 20, unit: 4, decorator });
+    remoconBuilder({ columns: 20, unit: 4, decorator });
 
   it("showLabel が false のキーは、build() で label を省き、buildEditor() では文字列を残す", () => {
     const b = builder(hideLabel).add(RemoteKeys.powerOn);
@@ -172,7 +172,7 @@ describe("RemoconBuilder（ラベルの表示）", () => {
 
 describe("RemoconBuilder.buildEditor()", () => {
   const build = () =>
-    remoteKeysBuilder({
+    remoconBuilder({
       columns: 20,
       unit: 4,
       background: "#0f172a",
@@ -188,7 +188,7 @@ describe("RemoconBuilder.buildEditor()", () => {
       .label("説明", { w: 8 })
       .addCustom("custom", "", { label: "自由", w: 8 });
 
-  it("version と grid と背景色を持ち、キーの id は追加した順の k1, k2, ... になる", () => {
+  it("version と grid と背景色を持ち、キーの id は追加した順の id1, id2, ... になる", () => {
     const editor = build().buildEditor();
 
     expect(editor).toMatchObject({
@@ -197,7 +197,7 @@ describe("RemoconBuilder.buildEditor()", () => {
       background: "#0f172a",
     });
     expect(editor.keys.map((key) => key.id)).toEqual(
-      editor.keys.map((_, i) => `k${i + 1}`),
+      editor.keys.map((_, i) => `id${i + 1}`),
     );
   });
 

@@ -9,8 +9,8 @@ export interface RemoteKeyTabGroup {
 /**
  * タブで始まるキーの並びを、タブごとのグループに分ける。
  * 各グループには、そのタブから次のタブの手前までのキーを含める。
- * キーの y 座標は、タブの下端を 0 とした相対的な値に変換する。
- * 先頭がタブでない場合は、既存の表示（タブなし）を維持するため、undefined を返す。
+ * キーの `y` 座標は、タブの下端を 0 とした相対的な値に変換する。
+ * 先頭がタブでない場合は、既存の表示（タブなし）を維持するため、`undefined` を返す。
  */
 export function groupRemoteKeysByTab(
   keys: RemoteKeyConfig[],

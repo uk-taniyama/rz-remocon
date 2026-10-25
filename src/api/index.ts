@@ -1,3 +1,12 @@
+/**
+ * @packageDocumentation
+ * キー定義・色・スキーマ・API 契約を提供する。
+ *
+ * - キーの定義（{@link RemoteKeyDef}）、色マップ、アイコン URL 対応表の解析を提供する。
+ * - 設定の zod スキーマと、編集用 API の契約（{@link contract}）を提供する。
+ * - {@link remoconBuilder} で、リモコン設定（{@link RemoconConfig}）を組み立てる。
+ */
+
 export * from "./builder";
 export * from "./client";
 export * from "./colors";

@@ -1,17 +1,17 @@
 /*
- * REGZA の標準のキー定義。
+ * REGZA の標準リモコンのキー定義と、キーの種類・既定色の定義。
  *
- * - キーの種類は、キー名の接頭辞（prefix）で決まる。
- * - FALLBACK_KIND は、REMOTE_KEY_KIND_DEFS のいずれかの kind と一致させる（一致しないと、読み込み時にエラーになる）。
+ * - キーの種類は、キー名の接頭辞（`prefix`）で決まる。
+ * - `FALLBACK_KIND` は、`REMOTE_KEY_KIND_DEFS` に定義された `kind` のいずれかと一致させる。
+ * - 一致しない場合、読み込み時にエラーになる。
  */
 import type { RemoteKeyDef, RemoteKeyKindDef } from "./key-types";
 
 /**
- * REGZA のリモコンキーの定義（キー名から code とラベルへの対応表）。
+ * REGZA の標準リモコンのキー定義。
  *
- * - 異なるキーが同じ code を持つ場合があるが、これは意図的な定義である。
- *   例: keyLeft2 と mediaBack10s、keyRight2 と mediaSkip30s は code を共有する。
- * - code の重複は不具合ではないため、重複の検出や統合は行わない。
+ * - キー名から、送信するキーコード（`code`）と表示用の `label` を引く対応表。
+ * - 異なるキーが同じキーコード（`code`）を持つことが可能。
  */
 export const REMOTE_KEY_DEFS = {
   // power
@@ -32,7 +32,7 @@ export const REMOTE_KEY_DEFS = {
   chBS: { code: "40BF7C", label: "BS" },
   chCS: { code: "40BF7D", label: "CS" },
   ch4K: { code: "40BE7C", label: "4K" },
-  chToggle: { code: "40BF79", label: "放送切替" } /* 地デジ → BS → CS → 4K */,
+  chToggle: { code: "40BF79", label: "放送切換" } /* 地デジ → BS → CS → 4K */,
   chNumber: { code: "40BF60", label: "Ch番号入力" },
 
   // program
@@ -79,7 +79,7 @@ export const REMOTE_KEY_DEFS = {
   mediaPause: { code: "40BF50", label: "一時停止" }, // ||
   mediaNext: { code: "40BE26", label: "次チャプター" }, // >>|
   mediaBack10s: { code: "40BE22", label: "10秒戻し" },
-  mediaSkip30s: { code: "40BE23", label: "30sec送り" },
+  mediaSkip30s: { code: "40BE23", label: "30秒送り" },
   mediaRecord: { code: "40BF86", label: "録画" },
 
   // button
@@ -135,15 +135,17 @@ export const REMOTE_KEY_DEFS = {
   etcDualScreen: { code: "40BF29", label: "二画面" },
 } as const satisfies Record<string, RemoteKeyDef>;
 
+/** 標準リモコンのキー定義に登録されているキー名。 */
 export type RemoteKeyName = keyof typeof REMOTE_KEY_DEFS;
 
+/** キーの種類ごとの接頭辞、表示名、既定色の定義。 */
 export const REMOTE_KEY_KIND_DEFS = [
   { kind: "power", prefix: "power", label: "電源", color: "#ef4444" },
   { kind: "volume", prefix: "vol", label: "音量", color: "#f59e0b" },
   { kind: "channel", prefix: "ch", label: "チャンネル", color: "#10b981" },
   { kind: "program", prefix: "pg", label: "番組", color: "#6366f1" },
   { kind: "number", prefix: "num", label: "数字", color: "#0ea5e9" },
-  { kind: "input", prefix: "input", label: "入力切替", color: "#8b5cf6" },
+  { kind: "input", prefix: "input", label: "入力切換", color: "#8b5cf6" },
   { kind: "media", prefix: "media", label: "メディア", color: "#ec4899" },
   { kind: "button", prefix: "btn", label: "ボタン", color: "#0094ff" },
   { kind: "app", prefix: "app", label: "アプリ", color: "#000000" },
@@ -152,7 +154,8 @@ export const REMOTE_KEY_KIND_DEFS = [
   { kind: "layout", prefix: "$", label: "レイアウト", color: "#475569" },
 ] as const satisfies readonly RemoteKeyKindDef[];
 
+/** キーの種類名。 */
 export type RemoteKeyKind = (typeof REMOTE_KEY_KIND_DEFS)[number]["kind"];
 
-/** どの接頭辞にも一致しないキー名に使う種類。 */
+/** キー名から種類を特定できない場合に使用する既定の種類。 */
 export const FALLBACK_KIND: RemoteKeyKind = "etc";

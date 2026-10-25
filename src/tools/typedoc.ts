@@ -105,6 +105,21 @@ export function createSourceDict(docs: TypeDocItem): SourceDict {
   return dict;
 }
 
-export function loadSourceDict(jsonPath: string): SourceDict {
-  return createSourceDict(loadJson<TypeDocItem>(jsonPath));
+let sourceDict: SourceDict | undefined;
+
+export function loadSourceDict(jsonPath: string) {
+  sourceDict = createSourceDict(loadJson<TypeDocItem>(jsonPath));
+  return sourceDict;
+}
+
+export function getSourceList(pkg: string, name: string) {
+  return sourceDict?.[itemKey(pkg, name)];
+}
+
+export function warn(pkg: string, name: string, message: string) {
+  const sourceList = getSourceList(pkg, name);
+  const source = sourceList
+    ? `${sourceList[0].fileName}:${sourceList[0].line}`
+    : "???:??";
+  console.warn(`${source} ${message}`);
 }

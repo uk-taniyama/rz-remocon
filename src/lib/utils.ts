@@ -17,11 +17,11 @@ export function randomUserId() {
 }
 
 /**
- * REGZA が返した暗号化済みのパスワードを、PIN と salt を使用して復号する。
+ * REGZA が返した暗号化済みのパスワードを、PIN と `salt` を使用して復号する。
  *
  * @param encryptedPassword - 暗号化されたパスワード（16進数の文字列）。
  * @param pin - REGZA に表示された PIN。
- * @param salt - 接続要求で取得した salt。
+ * @param salt - 接続要求で取得した `salt`。
  * @returns 復号したパスワード。
  */
 export function decryptPassword(
@@ -49,7 +49,7 @@ export function decryptPassword(
   ]).toString("ascii");
 }
 
-/** Digest 認証付きで fetch できるクライアントを生成する。 */
+/** Digest 認証付きで `fetch` できるクライアントを生成する。 */
 export function createDigestClient(userId: string, password: string) {
   return new DigestFetch(userId, password);
 }

@@ -27,7 +27,7 @@ import path from "node:path";
 import { _generateFromFile } from "./index";
 import type { GenExport } from "./types";
 
-// CLI が動的 import の結果をキャストしている GenExport と、公開エントリの generateFromFile が一致することを、型で検証する。
+// CLI が動的 import の結果をキャストしている GenExport と、公開エントリの _generateFromFile が一致することを、型で検証する。
 const gen = { _generateFromFile } satisfies GenExport;
 
 const [inputArg, outArg] = process.argv.slice(2);

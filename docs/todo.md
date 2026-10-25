@@ -34,7 +34,7 @@ REGZAリモコンを最初の用途とするが、リモコン専用にはせず
 EditorView
 ```
 
-ページは `editor.html` に分けた（ビューアの `index.html` とは別のバンドル）。（試行）
+ページは `editor.html` に分けた（ビューアの `index.html` とは別のバンドル）。`vite.config.ts` の `rollupOptions.input` で2ページをビルドする。（済。ビルドの確認は「HTML の分割」を参照）
 
 ### UI
 
@@ -214,26 +214,26 @@ REGZA リモコンのキーも Widget の一種として扱う。（済）
   * 原因は未調査。gridstack の衝突時の入れ替え（swap）の挙動が関係している可能性がある（推測。未確認）。
   * 先頭以外のタブが対象。先頭のタブは `locked` で動かせない。
 * `groupRemoteKeysByTab` は、配列の先頭がタブであることを前提にする（先頭でなければ従来表示にフォールバックする）。先頭のタブは `y = 0` に固定されているので、通常は満たされる。
-* タブバーの背景色は固定（`main.css` の `.remote-key-tabs__label` の `background-color: #ffffff`）。`remocon.background` とは連動していない。
+* タブバーの背景色は固定（`remote-keys.css` の `.remote-key-tabs__label` の `background-color: var(--color-white)`）。`remocon.background` とは連動していない。
 
 ### レビューメモ（2026-10-12）
 
 * **Builder の `tab()` の既定色が背景色になる。（済）**
   * 既定の背景は白（`DEFAULT_BACKGROUND`）なので、タブバーが「白地に白文字、枠も白」になり、読めなかった。
-  * 色を省いたときは、エディタと同じ既定色（`resolveKeyColor(TAB_KEY_NAME)`、種別「レイアウト」の `#475569`）にした。テストも合わせて直した。
+  * 色を省いたときは、エディタと同じ既定色（種別「レイアウト」の `#475569`）にした。Builder の既定の `decorator`（`colorDecorator`）が、`defaultColorResolver(TAB_KEY_NAME)` で色を決める。テストも合わせて直した。
 * **キーの中身の共通化（`KeyFace`）。** ビューア（`RemoteKeyButton`）とエディタ（`EditorKeyView`）が、同じ `KeyFace`（`remoteKeys/KeyFace.tsx`）で、外枠（`div.key-face`）・アイコン・ラベルを描く。外枠は常に `div`（ビューアのキーボード操作は持たない。送信は `data-code` のクリック委譲）。
   * アイコン本体（`fromComponents`、`imgRender`）は、枠いっぱい（100%）に描く。大きさは枠が決める（アイコンだけ 70%、ラベルと一緒 35%。値は `.key-face__icon` / `--with-label`）。
   * 文字と隙間の基準は `--key-font-size` / `--key-gap`。ビューアは `scaled()`、エディタは `editor.css` の 0.8rem を渡す。
 * **キーの共通スタイル `.key-button`（試行、未検証）。** `common.css` に作り、ビューアの通常キーとエディタのキータイル（`key-tile__button`）に付けた。背景色と文字色は `--key-bg` / `--key-fg` で渡す。
   * 文字色は `readableTextColor`（`remoteKeys/contrast.ts`）で決める。背景の相対輝度 L が `TEXT_COLOR_LUMINANCE_THRESHOLD`（0.6）より大きければ黒、以下なら白。2026-10-12 に 0.6 で導入（未検証）。
   * 0.6 では、黒になるのは薄い色だけ（`#39ff88`、`#e2e8f0`、`#ffffff`）。黄橙 `#faad14`（L 0.503）と黄緑 `#84cc16`（L 0.481）は白のまま。白との比は、それぞれ約 1.9 と約 2.0 で弱い。読みやすさを優先するなら、閾値を 0.5 にすると `#faad14` が黒になる。
-  * タブは対象外（従来どおり inline）。
+  * タブも `KeyFace` を使い、`.key-face.tab`（`remote-keys.css`）で、背景と文字の色を入れ替えて描く（背景 = `--key-fg`、文字 = `--key-bg`）。
 * **ビューアの色の見直し。CSS を含む。（現状で可。2026-10-12 に実機で確認し、タブの見た目はよいと判断。）**
   * 文字色が見づらくなるかもしれない。選択中のタブの文字色は `#fff` 固定で、明るいタブ色だと、背景との差が出ない。
   * 案: タブ色を基準に、読みやすいほうの文字色（白か黒）を決める。コントラスト比（WCAG の式）の大きいほうを選ぶ。ライブラリ（`colord` など）を使ってもよい。使うなら `dependencies` に入れる（`dist/` で解決できなくなるため）。
-  * タブバーの配色（`main.css` の `.remote-key-tabs__label`）は、背景 `#ffffff` 固定、色の変数が未設定のときの既定は `#2563eb`、タブの色は枠・文字・選択中の背景に使う。この構成のままでよいかを含めて見直す。
-  * 従来表示（タブ表示にならない場合）のタブは、背景が `DEFAULT_BACKGROUND` 固定、文字色が `key.color`（`RemoteKeyButton`）。タブ表示のときの色の扱いと揃える。
-  * タブバーの背景色（`#ffffff` 固定）が `remocon.background` と連動していない点（上に記載）も、ここで合わせて決める。
+  * タブバーの配色（`remote-keys.css` の `.remote-key-tabs__label`）は、背景 `--color-white` 固定、色の変数（`--remote-key-tabs-color`）が未設定のときの既定は `--color-primary`（`common.css`、`#2563eb`）、タブの色は枠・文字・選択中の背景に使う。この構成のままでよいかを含めて見直す。
+  * 従来表示（タブ表示にならない場合）のタブは、`KeyFace` の `.key-face.tab` で描く。背景は `--key-fg`（`readableTextColor(key.color)`、白か黒）、文字は `key.color`。タブ表示のときの色の扱い（背景は `--color-white` 固定）と揃えるかを決める。
+  * タブバーの背景色（`--color-white` 固定）が `remocon.background` と連動していない点（上に記載）も、ここで合わせて決める。
 * **エディタ: タブのロック状態が、gridstack のノードと食い違いうる。（現状は問題なし。削除の設計時に再確認）**
   * 先頭のタブの固定（`y` の固定）は、`getKeyRules` が `y === 0` で、その都度判定する。一方、ドラッグを止める `locked` / `noMove` は、ノードを作るとき（`editorKeyToWidget`）に一度付けるだけで、あとから更新しない。
   * 現状は、先頭のタブが `y = 0` でロックされ、他のキーに押しのけられない（実機で確認済み）。作成後に他のタブが `y = 0` へ来ることもないので、食い違いは起きない。
@@ -252,16 +252,16 @@ REGZA リモコンのキーも Widget の一種として扱う。（済）
     * Pico と `common.css` は、`main.css` / `editor.css` の先頭で `@import` している。JS の import にすると共有チャンク（`web-*.css`）になり、ビューアの `index.html` の CSS が2つになって `generate` が失敗するため。
     * ビューアから Pico を外すには、`main.css` の `@import "@picocss/pico/..."` を消す。
     * 確認点: `dist/public/index.html` の stylesheet が1つだけ（`main-*.css`）であること。`common.css` が別ファイルとして出ていないこと。
-* **エディタの Preview（広い画面だけ横並び。試行、未検証）。** `PreviewView`（`views/PreviewView.tsx`）が、編集中のキーを `toRemoconConfig` で変換して、ビューアと同じ `RemoteKeyButtons` で描く。
+* **エディタの Preview（広い画面だけ横並び。試行、未検証）。** `PreviewView`（`views/PreviewView.tsx`）が、編集中のキーを `toRemoconConfig` で変換して、ビューアと同じ `RemoteKeyLayout` で描く。
   * `EditorView` は、`syncDirty` のたびに `readCurrent()` を `previewKeys` に入れて渡す（保存前の編集も見える）。
-  * 操作はさせない。`RemoteKeySender` を使わず、枠に `inert` を付ける。キーを押しても送信されない。
+  * キー送信はしない。`RemoteKeySender` を使わないので、キーを押しても TV には送信されない。タブの切り替えは操作できる（枠に `inert` は付けていない）。
   * 幅は 1400px 以上で 4 列目に出す（`editor.css`）。それ未満は非表示で、3 列のまま。
   * キーの大きさは `.remote-key-container`（`container-type: inline-size`）の幅、`100cqw` で決まる。ビューアと Preview は、同じクラスの div で包む。
   * CSS は `remote-keys.css`（キーの枠・タブ）を新しく分け、`main.css` と `editor.css` の両方が `@import` する。エディタで Pico を外した版を使うときは、`editor.css` の先頭の `@import` を、その版に合わせる。
-  * 確認点: 1400px 前後で列が切り替わること、タブ付きのデータで Preview のタブバーが枠の下に張り付くこと、`inert` で操作できないこと。
+  * 確認点: 1400px 前後で列が切り替わること、タブ付きのデータで Preview のタブバーが枠の下に張り付くこと、キーを押しても送信されないこと。
 * **CSS の残存クラスの見直し。（見直し済み。そのままでよい）** 2026-10-12 時点の静的な調べ。
   * `main.css` / `editor.css` / `common.css` で定義していて、コードから使われていないクラスは、gridstack が実行時に付ける `grid-stack-item` / `grid-stack-item-content` / `ui-resizable-se` だけ。これは残す。
-  * ビューアのタブ（`RemoteKeyButton`）が付ける `class="tab"` に、CSS がない。`.tab` のルールは、エディタ用の `.key-tile .key-tile__button.tab` だけで、ビューアのタブはインラインの style で描いている。クラスを外すか、CSS に移すかを決める。
+  * ビューアのタブの `class="tab"` は、`KeyFace` が付け、`remote-keys.css` の `.key-face.tab` で描く。エディタ用の上書きは `editor.css` の `.key-tile > .key-face.tab`。（解消済み）
   * コードが付けているのに、CSS にルールがないクラス: `color-picker-dialog`、`color-picker-dialog__action--cancel`、`color-picker-dialog__action--ok`、`color-picker__hex-label`。見た目には効かず、フック用として残す。（`color-picker-dialog__body` などは `editor.css` にルールがある。）
   * 値の未参照の CSS 変数は、`--pico-*`（Pico の上書き）だけ。問題なし。
 * **先頭がタブでない場合の扱い。対応不要と判断。**
@@ -271,14 +271,14 @@ REGZA リモコンのキーも Widget の一種として扱う。（済）
 
 ## Builder（コードでの組み立て）
 
-Builder（`remoteKeysBuilder`）は、エディタとは別の入口として実装している。（済）
+Builder（`remoconBuilder`）は、エディタとは別の入口として実装している。（済）
 
-* `build()` の結果は `RemoconData`（`version` を除いた形）。`{ version: 1, ...build() }` で `remocon.json` として保存できる。
+* `build()` の結果は `RemoconConfig`（`version: 1` を含む）。そのまま `remocon.json` として保存できる。
 * `buildEditor()` の結果は `EditorRemoconConfig`。そのまま `remocon.editor.json` として保存できる。（済）
   * キーは、`label` の文字列と `showLabel` を持ち続け、結果を作るときに形を整える。`build()` は、`showLabel` が `false` のキーの `label` を省く。`buildEditor()` は、文字列を残す。
   * `RemoteKeyDraft` に `showLabel`（任意）を足した。`decorator`（`createDecorator`）は、アイコンが付くキーの `label` を消さず、`showLabel` を `false` にする。`label` を `undefined` にするだけの `decorator` も、従来どおり非表示になる。
   * `overrides` に `label` だけを指定すると、その文字列を表示する。`showLabel` も指定したときは、そちらが優先。
-  * `id` は `k1`、`k2`、…（追加した順）。タブとラベルは、`code` を持たず、`showLabel` が `true`。`toRemoconConfig(buildEditor())` は、`build()` と同じ内容になる（並びは上から左へ揃う）。
+  * `id` は `id1`、`id2`、…（追加した順）。タブとラベルは、`code` を持たず、`showLabel` が `true`。`toRemoconConfig(buildEditor())` は、`build()` と同じ内容になる（並びは上から左へ揃う）。
 * 出力は検証していない。`w: 0` や不正な色も通る。（未）
 * `tab(label, color?)` で、タブを置く。途中の行でも、自動で改行してから置く（`newline()` は不要）。幅は全幅、高さは1キー分（エディタの表示と揃える）。最初のタブは、キーを1つも置く前に置く。違えばエラー（先頭がタブでないと、タブ表示にならないため）。2つ目以降は、どこに置いてもよい。（済）
 * `label(text, overrides?)` で、コードのないラベルを置く。既定は1キー分。（済）
@@ -288,13 +288,13 @@ Builder（`remoteKeysBuilder`）は、エディタとは別の入口として実
 
 Builder の `decorator` と `generate` の `iconRender`、アイコンの有無を返す `hasIcon` は、同じアイコンセットから組で作る。（済）
 
-* `IconSet`（名前 → 描画関数）を、`builtinIcons`、`fromComponents`、`fromUrls` で作り、`createGenerateTools(...sets)` に渡す。後ろのセットが優先。
-* 標準のアイコンに `icon-urls.json` の表を足す組は、`createGenerateToolsWithUrls(urls)`（`createGenerateTools(builtinIcons, fromUrls(urls))` と同じ）で作る。`generate`、標準のリモコン（`default-remocon.ts`）、ビューア・エディタ（`useIconSet`）が使う。（済）
+* `IconSet`（名前 → 描画関数）を、`builtinIcons`、`fromComponents`、`fromUrls` で作り、`createGenerateTools(sets, colorResolver)` に配列で渡す。後ろのセットが優先。
+* 標準のアイコンに `icon-urls.json` の表を足す組は、`createGenerateToolsWithUrls(urls, colorResolver)`（`createGenerateTools([builtinIcons, fromUrls(urls)], colorResolver)` と同じ）で作る。`generate`、標準のリモコン（`default-remocon.ts`）、ビューア・エディタ（`useIconSet`）が使う。（済）
 * `decorator` は、表にある名前をキーの `icon` に入れる。`iconRender` は、表にある名前はその描画関数、それ以外の文字列は `<img>` で描く。
 * `hasIcon(name)` は、表に名前があるかを返す。`decorator` が `icon` を入れるかの判定に使い、エディタのキー一覧（`createEditorCatalog`）にも渡す。
 * `keepLabel` は、呼び出しごとに `defaultDecorator(key, { keepLabel: true })` で指定する。既定値には足さない。
-* 色の差し替え（`colorResolver`）は未対応。`decorator` をラップして `color` を先に入れる方法で代用できる。（未）
-* 公開は `types.ts` と `utils.ts` に書いたものだけ。`internal.ts`（`createDecorator`、`createIconRenderer`、`imgRender`）は非公開。（済）
+* 色の差し替えは、`createGenerateTools` / `createGenerateToolsWithUrls` の第2引数 `colorResolver` で指定する。省略時は `defaultColorResolver`。`color-map.json` の色を使うときは、`createColorResolver(mergeColorMap(loadColorMapFile(...)))` を渡す。（済）
+* 公開は `types.ts` と `utils.ts` に書いたものだけ。`internal.ts`（`createDecorator`、`createIconRenderer`、`imgRender`、`OnChangeCode`）は非公開。（済）
 
 ## color-map.json
 
@@ -339,9 +339,9 @@ Builder の `decorator` と `generate` の `iconRender`、アイコンの有無�
 
 | 項目 | 内容 | 状態 |
 |---|---|---|
-| `isIconUrl` / `parseIconUrls` | 項目ごとの検証。不正な項目は `errors` に記録して飛ばす。`api/icon-urls.ts`。公開 API（`api/index.ts`）には出していない | 済 |
+| `isIconUrl` / `parseIconUrls` | 項目ごとの検証。不正な項目は `errors` に記録して飛ばす。`api/icon-urls.ts`。`parseIconUrls` と型（`IconUrls`、`IconUrlsResult`）は `api/index.ts` から公開する（`gen` の `loadIconUrlsFile` の戻り値が `IconUrls`）。`isIconUrl` は非公開 | 済 |
 | `useIconSet()` | `/data/icon-urls.json` を取得して検証する（`web/remoteKeys/useIconUrls.ts`）。`loadIconUrls` は失敗しても例外を投げず、`{ urls, warnings }` を返す（不正な項目は飛ばして `urls` に入れず、`warnings` に全部残す）。`useIconSet` は `ready`・描画関数・警告を返し、警告は `console.warn` にも出す。 | 済 |
-| 描画 | `createGenerateTools(builtinIcons, fromUrls(map)).iconRender` を作り、`MainView`、`PreviewView`、`EditorKeyView` の `defaultIconRender` を置き換えた。エディタは、`EditorContext` の `iconRender` 経由で、`PreviewView` は `iconRender` プロパティ（省略時は標準）で受ける | 済 |
+| 描画 | `createGenerateToolsWithUrls(map).iconRender` を作り、`MainView`、`PreviewView`、`EditorKeyView` の `defaultIconRender` を置き換えた。エディタは、`EditorContext` の `iconRender` 経由で、`PreviewView` は `iconRender` プロパティ（省略時は標準）で受ける | 済 |
 | `generate` | `--icon-urls <path>`。省略時は、入力（`-i`）と同じディレクトリの `icon-urls.json`（なければ空）。指定したのにないとき、形式が不正なときは、エラー。 | 済 |
 | ドキュメント | `README.md`（アイコンの追加、`generate`、設定ファイルの表）、この文書 | 済 |
 | テスト | スキーマ（`icon-urls.test.ts`）、`loadIconUrls` の404・不正・通信失敗（`useIconUrls.test.ts`）、表を足した `createGenerateTools` の描画と `hasIcon`（`utils.test.ts`）、`generate` の読み込み、`/data/icon-urls.json` の配信（`server.test.ts`）、`PreviewView`、エディタでの `icon` の保持（`editor-grid.test.ts`）、キー一覧（`editor-catalog.test.ts`）、エディタ全体を実物の `useEditorData` ごと jsdom に描画する `editor-icons.jsdom.test.tsx`（表が届くまで描かない、一覧と保存済みのキーの画像、404、不正な項目、通信失敗） | 済 |
@@ -390,16 +390,16 @@ Builder の `decorator` と `generate` の `iconRender`、アイコンの有無�
 
 `src/web/remoteKeys` を、将来 `src/ui` として独立させる。`gen` と `web` が `ui` を参照する構成にする。
 
-* 循環 import の解消（`RemoteKeyIconRender` と `OnChangeCode` は `types.ts` に集約。済）
+* 循環 import の解消（`RemoteKeyIconRender` などの公開する型は `types.ts` に集約。`OnChangeCode` は、公開しない型なので `internal.ts` に置く。済）
 * `apiClient` を `src/web/client.ts` に移し、`useRegzaApi` と `sendCode` は `client` を引数で受ける。（済）
 * 型の import は、`remoteKeys` の外からは `remoteKeys/index.ts` 経由にする。（済）
 * `remoteKeys/index.ts` の境界（`ui` の入口）と、`gen/index.ts` の公開（`rz-remocon/gen`）の整理。（未・後回し）
-  * `gen/index.ts` の `export * from "../web/remoteKeys"` をやめ、README に載っている名前（`fromUrls` などを含む）を明示する。
+  * `gen/index.ts` の `export * from "../web/remoteKeys"` をやめ、リファレンス（`refs/rz-remocon-gen/index.md`）に載せる名前（`fromUrls` などを含む）を明示する。
   * `remoteKeys/index.ts` の中身は増やさない。`ui` を分けるときに、部品とフックの入口を決める。
 * fetch 先 URL（`/data/…`）の引数化は、やらない。既定値のまま `ui` に置く。（方針）
 * `src/ui` の作成、`tsconfig` / `tsup` / `api-extractor` の対象の更新。（未）
-* `src/web/remokey.ts` は残す（削除しない）。
-* 確認: `npm run tsc`、`npm run test`、`npm run build`。（手元で確認済み。ただし型 import の統一後は未確認）
+* 公開 API（`rz-remocon/gen`）の整理: `OnChangeCode` を `internal.ts` に移し、`GenerateFromFileOpts` を `gen/index.ts` から外した（CLI の `generate` コマンド専用の型のため。CLI は `gen/types.ts` から直接 import する）。`GenerateFromFile` と `GenExport`（`gen/types.ts`）は、`index.ts` から出していないので非公開（`@internal` は付けていない）。（済）
+* 確認: `npm run lint`（`check` と `tsc` を続けて実行）、`npm run test`、`npm run build`。（手元で確認済み。ただし型 import の統一後と、公開 API の整理後は未確認）
 
 ## キー定義の差し替え（一部）
 
